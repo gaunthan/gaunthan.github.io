@@ -346,41 +346,16 @@
     
     
     <article class="index-post">
-        <a class="abstract-title" href="/2019/03/08/test-my-site/">
+        <a class="abstract-title" href="/2019/03/08/yuque/Building Dense Map for visual SLAM/">
             
-                <span>test_my_site</span>
+                <span>Building Dense Map for visual SLAM</span>
         </a>
         <div class="abstract-content">
-            $R_{m \times n} = U_{m \times m} S_{m \times n} V_{n \times n}’$
+            
+为了能够在未知的环境中进行自主导航，机器人首先需要能够自动地建立环境地图以及获知自身的位姿信息。其次，最容易被忽略但却必需的是环境的稠密地图。如果机器人没有环境的全部信息，那么进行导航规划时机器人就不知道哪里是可以行走的道路，可能撞到障碍物或者掉坑里……许多著名的vSLAM框架构建的地图都是稀疏的，如S-PTAM[1]、ORB-SLAM2[2]等。为了进行导航，需要构建环境的稠密地图。本文介绍了一些可行的方法，如使用三维重建(3D Reconstruction)生成图像帧的点云，然后进行深度融合；或者基于RGB-D相机，直接生成稠密地图等。
 
-\min_{\mathbf{w},b} \frac{1}{2} \Vert \mathbf{w} \Vert^2 \quad s.t. \quad y_i(\mathbf{w}^T\phi(\mathbf{x})+b) \geq 1, \quad  i=1,2,...,m\qquad(9)
-        </div>
-        <div class="abstract-post-meta">
-            <!-- date  -->
-            <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/08</span>
-            </div>
-            <!-- tags  -->
-            
-        </div>
-    </article>
-    
-    
-    
-    
-    
-    
-    <article class="index-post">
-        <a class="abstract-title" href="/2019/03/08/hello-world/">
-            
-                <span>Hello World</span>
-        </a>
-        <div class="abstract-content">
-            Welcome to Hexo! This is your very first post. Check documentation for more info. If you get any problems when using Hexo, you can find the answer in troubleshooting or you can ask me on GitHub.
-Quick StartCreate a new post1$ hexo new "My New Post"
-More info: Writing
-Run server1$ hexo server
-More...
+
+Introduction在未知环境中的自...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
@@ -493,16 +468,9 @@ More...
     
     
     
-    
-    
-    
-    
-    
-    
-    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 2
+        Total : 1
         </div>
         <!-- search  -->
         
@@ -518,21 +486,7 @@ More...
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/08</span><a class="archive-post-title" href="/2019/03/08/test-my-site/">test_my_site</a>
-        </li>
-    
-    
-    
-    
-    
-        </ul>
-    
-    <div class="archive-year"> Invalid date </div>
-    <ul class="year-list">
-    
-    
-        <li class="archive-post-item">
-            <span class="archive-post-date">Invalid date</span><a class="archive-post-title" href="/2019/03/08/hello-world/">Hello World</a>
+            <span class="archive-post-date">03/08</span><a class="archive-post-title" href="/2019/03/08/yuque/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM</a>
         </li>
     
     </ul></div>
