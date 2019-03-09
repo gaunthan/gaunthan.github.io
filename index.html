@@ -359,23 +359,34 @@ height:50vh;
     
     
     <article class="index-post">
-        <a class="abstract-title" href="/2019/03/08/yuque/Building Dense Map for visual SLAM/">
+        <a class="abstract-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">
             
-                <span>Building Dense Map for visual SLAM</span>
+                <span>ORB-SLAM： A Versatile and Accurate Monocular SLAM System</span>
         </a>
         <div class="abstract-content">
             
-为了能够在未知的环境中进行自主导航，机器人首先需要能够自动地建立环境地图以及获知自身的位姿信息。其次，最容易被忽略但却必需的是环境的稠密地图。如果机器人没有环境的全部信息，那么进行导航规划时机器人就不知道哪里是可以行走的道路，可能撞到障碍物或者掉坑里……许多著名的vSLAM框架构建的地图都是稀疏的，如S-PTAM[1]、ORB-SLAM2[2]等。为了进行导航，需要构建环境的稠密地图。本文介绍了一些可行的方法，如使用三维重建(3D Reconstruction)生成图像帧的点云，然后进行深度融合；或者基于RGB-D相机，直接生成稠密地图等。
+Mur-Artal R, Montiel J M M, Tardós J D. ORB-SLAM: A Versatile and Accurate Monocular SLAM System[J]. IEEE Transactions on Robotics, 2017, 31(5):1147-1163.
 
+Introduction曾经有很长一段时间，BA(Bundle Adjustment)由于计算量较大被认为不适合实时任务（如视觉SLAM），即便它能提供比较准确的估计。为了以不太高昂的代价实现准确的估计，一个实时的SLAM算法需要提供满足以下要求的BA：
 
-Introduction在未知环境中的自...
+能产生选择的特征集（关...
         </div>
         <div class="abstract-post-meta">
             <!-- date  -->
             <div class="abstract-date">
-                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2019/03/08</span>
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/19</span>
             </div>
             <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+</div>
             
         </div>
     </article>
@@ -576,18 +587,24 @@ Introduction在未知环境中的自...
     
     
     
-    <div class="archive-year"> 2019 </div>
+    <div class="archive-year"> 2018 </div>
     <ul class="year-list">
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">03/08</span><a class="archive-post-title" href="/2019/03/08/yuque/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM</a>
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System</a>
         </li>
     
     </ul></div>
   </div>
         <div class="sidebar-panel-tags">
     <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>

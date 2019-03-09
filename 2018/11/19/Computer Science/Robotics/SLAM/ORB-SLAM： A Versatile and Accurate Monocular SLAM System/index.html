@@ -1,0 +1,823 @@
+<!DOCTYPE html>
+<html lang="Chinese">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Gaunthan Huang">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Gaunthan Huang">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>ORB-SLAM： A Versatile and Accurate Monocular SLAM System · Gaunthan&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">gaunthan&#39;s blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">ORB-SLAM： A Versatile and Accurate Monocular SLAM System</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">gaunthan's blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            ORB-SLAM： A Versatile and Accurate Monocular SLAM System
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">6.4k</span>阅读时长: <span class="post-count reading-time">23 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/11/19</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>Mur-Artal R, Montiel J M M, Tardós J D. ORB-SLAM: A Versatile and Accurate Monocular SLAM System[J]. IEEE Transactions on Robotics, 2017, 31(5):1147-1163.</p>
+</blockquote>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>曾经有很长一段时间，BA(Bundle Adjustment)由于计算量较大被认为不适合实时任务（如视觉SLAM），即便它能提供比较准确的估计。为了以不太高昂的代价实现准确的估计，一个实时的SLAM算法需要提供满足以下要求的BA：</p>
+<ol>
+<li>能产生选择的特征集（关键帧）包含的场景特征（地图点）对应的配对观测。</li>
+<li>由于复杂性会随着关键帧的数量增长，这些选择应该避免不必要的冗余。</li>
+<li>拥有健壮的面向关键帧和地图点的网络配置以产生准确的结果，即一组观测到拥有充分视差信息的地图点和充足闭环的、好的关键帧集合。</li>
+<li>能为非线性优化提供关键帧的位姿和特征点的位置的初始值。</li>
+<li>拥有一个探索中的局部地图，该地图仅关注局部区域，以此实现扩展性。</li>
+<li>能够快速地执行全局优化以实时地闭合回环。</li>
+</ol>
+<p>第一个实现了BA实时性的工作是论文<sup><a href="#fn_1" id="reffn_1">1</a></sup>提出的视觉里程计，紧接着的工作是著名的PTAM<sup><a href="#fn_2" id="reffn_2">2</a></sup>。PTAM提供了有效的关键帧选择、特征匹配、点三角化、每帧相机定位以及失败时进行的重定位功能。可惜的是，它缺乏闭环检测、足够的遮挡处理、对重定位视角变化的鲁棒性，而且在初始化阶段还需要人类介入。</p>
+<p>所幸的是，后来的研究者基于前人的工作，对这些缺点进行了充分的研究，提出了许多有效的方法。最终，便诞生了用途多又准确的ORB-SLAM框架<sup><a href="#fn_3" id="reffn_3">3</a></sup>。总的来说，ORB-SLAM论文的贡献有以下几点：</p>
+<ol>
+<li>所有的任务（追踪、建图、重定位和闭环）都使用了同样的特征——通过使用ORB特征，即便没有GPU也能够实现实时计算。</li>
+<li>大规模环境下操作也是实时的。由于使用了共视图(covisibility graph)，追踪和建图仅需关注地图的局部共视区域，因此与全图的大小独立。</li>
+<li>基于位姿图优化实现了实时的闭环检测。</li>
+<li>实现了拥有视角和光线不变性、实时的相机重定位。</li>
+<li>基于模型选择实现了自动的、鲁棒的单目SLAM初始化。</li>
+<li>使用适者生存(survival of the fittest)策略选择关键帧和地图点进行扩张、但使用很严格的策略进行剔除（去除冗余关键帧），不仅提高了追踪的鲁棒性，还有益于长期运行。</li>
+</ol>
+<blockquote id="fn_1">
+<sup>1</sup>. Mouragnon E , Lhuillier M , Dhome M , et al. Real Time Localization and 3D Reconstruction[C]// IEEE Computer Society Conference on Computer Vision &amp; Pattern Recognition. IEEE Computer Society, 2006.<a href="#reffn_1" title="Jump back to footnote [1] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_2">
+<sup>2</sup>. Klein G , Murray D . Parallel Tracking and Mapping for Small AR Workspaces[C]// IEEE &amp; Acm International Symposium on Mixed &amp; Augmented Reality. IEEE, 2008.<a href="#reffn_2" title="Jump back to footnote [2] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_3">
+<sup>3</sup>. Mur-Artal R, Montiel J M M, Tardós J D. ORB-SLAM: A Versatile and Accurate Monocular SLAM System[J]. IEEE Transactions on Robotics, 2017, 31(5):1147-1163.<a href="#reffn_3" title="Jump back to footnote [3] in the text."> &#8617;</a>
+</blockquote>
+<h2 id="Related-Work"><a href="#Related-Work" class="headerlink" title="Related Work"></a>Related Work</h2><h3 id="Place-Recognition"><a href="#Place-Recognition" class="headerlink" title="Place Recognition"></a>Place Recognition</h3><p>场景识别在SLAM的重定位和闭环检测过程中发挥着至关重要的作用。例如，准确地识别出机器人当前所处的场景，找出其在地图中的配对，则此时可以进行重定位。如果机器人观测轨迹构成了回路，则此时可以进行闭环修正。</p>
+<p>场景识别大致可分为三种方法<sup><a href="#fn_4" id="reffn_4">4</a></sup>：</p>
+<blockquote id="fn_4">
+<sup>4</sup>. Williams B , Cummins M , José Neira, et al. A comparison of loop closing techniques in monocular SLAM[J]. Robotics &amp; Autonomous Systems, 2009, 57(12):1188-1197.<a href="#reffn_4" title="Jump back to footnote [4] in the text."> &#8617;</a>
+</blockquote>
+<ul>
+<li>Map-to-map。比对两个地图的外观和位置。</li>
+<li>Image-to-map。比对当前帧和地图中的特征。</li>
+<li>Image-to-image。比对当前帧和先前见过的帧。</li>
+</ul>
+<p>对SLAM来说，Image-to-map方法契合度最高。这种方法匹配成功了可以直接得出机器人的定位，但是效率较低，无法满足实时性需求。Image-to-image matching也是基于外观(appearance-based)的方法，相比于另外两种方法，它运行更快，更容易扩展到大规模的环境。</p>
+<p>最流行的基于外观的识别方法是<a href="http://leanote.com/blog/post/5b372ab2ab64410bbf0010f5" target="_blank" rel="noopener">词袋方法</a>(Bags of words)。它将图片表征为一些单词的集合，图片间的匹配转换为对应集合的比较。图片首先使用某些特征提取方法（SIFT、SURF等）提取特征，然后将所有训练图片的特征整合起来构成视觉词典(visual vocabulary)，然后图片便可以根据拥有的特征转换为单词向量。</p>
+<p>词袋的第二个版本DBoW2使用BRIEF描述符和FAST特征检测器进行特征提取，这种方式效率非常高，但缺乏旋转和尺度不变性，因此ORB-SLAM使用了新的特征——ORB<sup><a href="#fn_0" id="reffn_0">0</a></sup>。ORB是一种对旋转和尺度保持不变的二进制特征，计算速度非常快，对视角拥有很好的不变性。</p>
+<blockquote id="fn_0">
+<sup>0</sup>. Rublee E, Rabaud V, Konolige K, et al. ORB: An efficient alternative to SIFT or SURF[C]// International Conference on Computer Vision. IEEE, 2012:2564-2571.<a href="#reffn_0" title="Jump back to footnote [0] in the text."> &#8617;</a>
+</blockquote>
+<h3 id="Map-Initialization"><a href="#Map-Initialization" class="headerlink" title="Map Initialization"></a>Map Initialization</h3><p>由于深度信息无法从单张图片中恢复出来，单目SLAM需要有一个初始化过程去创建初始地图。这个过程其实就是通过移动相机，使其重复观测到同一个对象（即场景特征），通过三角化获得初始参照物。这个过程中需要计算两帧间的相对位姿，根据场景的不同，计算方法也不同。</p>
+<p>一种初始化方法是在初始化时让系统追踪一个已知的结构<sup><a href="#fn_5" id="reffn_5">5</a></sup>。如果在初始化阶段相机观测到平面场景，那么利用平面的单应性和五点法<sup><a href="#fn_5" id="reffn_5">5</a></sup>（某些情况下可能有歧义解）可以估计出相机的位姿；如果观测到非平面场景，可以用八点法<sup><a href="#fn_6" id="reffn_6">6</a></sup>计算基础矩阵，然后恢复相机的相对位姿。</p>
+<blockquote id="fn_5">
+<sup>5</sup>. Nister, D. An efficient solution to the five-point relative pose problem[J]. IEEE Transactions on Pattern Analysis and Machine Intelligence, 2004, 26(6):756-770.<a href="#reffn_5" title="Jump back to footnote [5] in the text."> &#8617;</a>
+</blockquote>
+<p>ORB-SLAM通过使用模型选择方法，自动地完成了初始化方法的选择。相比于人先验地设定计算方法，这种利用观测的数据做决策的方法更为有效。</p>
+<p>在平面场景的情况下，为了操作的安全性，如果计算出的位姿没有确定解，那么ORB-SLAM会延长初始化步骤直至有足够的信息计算出确定解。</p>
+<blockquote id="fn_5">
+<sup>5</sup>. A. J. Davison, I. D. Reid, N. D. Molton, and O. Stasse, “MonoSLAM: Real-time single camera SLAM,” IEEE Trans. Pattern Anal. Mach. Intell., vol. 29, no. 6, pp. 1052–1067, Jun. 2007<a href="#reffn_5" title="Jump back to footnote [5] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_6">
+<sup>6</sup>. R. Hartley and A. Zisserman, Multiple View Geometry in Computer Vision, 2nd ed., Cambridge, U.K.: Cambridge Univ. Press, 2004.<a href="#reffn_6" title="Jump back to footnote [6] in the text."> &#8617;</a>
+</blockquote>
+<h3 id="Monocular-Simultaneous-Localization-and-Mapping"><a href="#Monocular-Simultaneous-Localization-and-Mapping" class="headerlink" title="Monocular Simultaneous Localization and Mapping"></a>Monocular Simultaneous Localization and Mapping</h3><p>单目SLAM最初是通过滤波器方法求解的。这种方法把相机输出的每一帧图像都送进滤波器，联合地估计地图特征的位置和相机的位姿。由于连续的帧之间差异很小，这种方法有许多计算都是重复的，导致浪费了很多计算资源。</p>
+<p>基于关键帧的方法通过帧选择隔离了建图和相机帧率，允许执行昂贵却更加精确的操作，如BA。最具代表性的基于关键帧的SLAM系统就是前文提到的PTAM。ORB-SLAM也是在这个系统的基础上进行改进和优化的。</p>
+<p>ORB-SLAM也从论文<sup><a href="#fn_7" id="reffn_7">7</a></sup>中汲取了许多思想。这篇论文使用了两个窗口进行优化——内窗口只关注局部区域，执行BA优化；外窗口执行尺度受限的位姿图优化。但与它不同的是，ORB-SLAM重新设计了前端和后端，而且对追踪和建图使用了同样的特征（ORB特征）。</p>
+<p>ORB-SLAM的一大重点是关键帧选择方法。PTAM使用严格的挑选策略，在环境条件较差时算法容易失败。考虑到这一点，ORB-SLAM使用了鲁棒性更好的策略——适者生存策略：尽可能快地插入关键帧，但严格地淘汰掉冗余的关键帧，避免额外的代价。</p>
+<h2 id="System-Overview"><a href="#System-Overview" class="headerlink" title="System Overview"></a>System Overview</h2><h3 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h3><p>ORB-SLAM系统由三个线程组成：Tracking（追踪）、Local Mapping（局部建图）和Loop Closing（闭环）。系统的框架如下所示：</p>
+<p><img src="https://leanote.com/api/file/getImage?fileId=5c813654ab644140b1003d66" alt></p>
+<p>Tracking负责定位相机每帧的位姿以及决定插入新关键帧的时机。它首先将当前帧与上一帧进行特征匹配和位姿计算，利用Motion-only BA对该位姿进行优化。如果追踪失败，就使用场景识别模块进行全局重定位。一旦获得相机位姿的初始估计和特征匹配对，就在共视图上提取一个共视的局部地图（由跟当前帧共视的关键帧组成），接着使用重投影搜索当前帧和地图点的匹配对，用这些匹配对进行位姿的进一步优化。最终，决定是否需要插入新的关键帧。</p>
+<p>Local Mapping处理新的关键帧和执行Local BA实现相机位姿局部区域的最优重建。该线程也负责冗余关键帧的去除。</p>
+<p>Loop Closing在每个关键帧上搜索回环。一旦检测到回环，就计算场景的相似性（相似的程度表征了回环累积漂移的多少）。然后对回环进行配准，融合重复的地图点。最后使用相似性约束进行位姿图优化，实现全局一致性。</p>
+<p>所有的优化过程都使用Levenberg–Marquardt算法进行最优化求解。</p>
+<h3 id="Feature-Choice"><a href="#Feature-Choice" class="headerlink" title="Feature Choice"></a>Feature Choice</h3><p>为了达到实时性要求，ORB-SLAM要求特征的提取速度严格小于33ms每帧（因为相机的帧率通常都设置为30FPS）。该要求排除了SIFT(~300ms)、SURF(~300ms)，以及A-KAZE(~100ms)。</p>
+<p>为了获得通用的场景识别能力，要求特征具有旋转不变性。这又排除了BRIEF和LDB。最终，ORB-SLAM的设计者决定使用ORB特征。ORB特征的计算速度非常快，而且对视角有很好的不变性，能够满足系统的需求。</p>
+<h3 id="Map-Points-Keyframes"><a href="#Map-Points-Keyframes" class="headerlink" title="Map Points, Keyframes"></a>Map Points, Keyframes</h3><p>每个地图点$p_i$存储以下信息：</p>
+<ul>
+<li>在世界坐标系下的3D位置$X_{w,i}$。</li>
+<li>视角方向$n_i$，是该点所有视角方向（即连接该点与观测到该点的关键帧的光流中心的射线）的平均单位向量。</li>
+<li>一个代表性的ORB描述符$D_i$，是所有观测到该点的关键帧中汉明距离最小的那个ORB描述符。</li>
+<li>满足ORB特征的尺度不变性约束条件下，能观测到该点的最大距离$d_{max}$和最小距离$ d_{min}$。</li>
+</ul>
+<p>每个关键帧$K_i$存储以下信息：</p>
+<ul>
+<li>该帧的相机位姿$T_{iw}$，即将该帧的像素点从世界坐标系变换到相机坐标系的刚体变换矩阵。</li>
+<li>相机内参，包括焦距和主点。</li>
+<li>从该帧提取的全部ORB特征，特征可能关联到有关的地图点。</li>
+</ul>
+<h3 id="Covisibility-Graph-and-Essential-Graph"><a href="#Covisibility-Graph-and-Essential-Graph" class="headerlink" title="Covisibility Graph and Essential Graph"></a>Covisibility Graph and Essential Graph</h3><p>关键帧之间的共视信息对系统的几个任务都大有裨益，这些信息用一个无向权重图来表征，这个图被称为共视图(covisibility graph)。图的结点代表关键帧，结点的边代表两个关键帧共同观测到15个以上的地图点，边权$\theta$表征了共视的地图点的数量。两个关键帧共视得越多，其边权越大。</p>
+<p>在Loop Closing中，一个很关键的操作是修正回环。检测只是其第一步。为了修正一个回环，系统执行一个位姿图优化(pose graph optimization)，将修正信息分配到整个图上。由于共视图往往十分稠密，直接处理整张图可能会导致计算时间过长。为了不对所有的边进行操作，可以使用另一个图——本质图(essential graph)。本质图包含原图所有的结点，但少了一部分边。可以把本质图理解为共视图的核心部分，通过刻意裁剪掉一些不那么重要的边，使得操作结果保持准确的同时又提高其执行效率。</p>
+<p>系统从第一个初始关键帧开始，增量地构建一棵生成树，它是共视图边数最少的连接子图。当插入新关键帧时，代表该帧的新结点被连接到图中与它共视最多的结点上。当通过剔除策略删除关键帧时，所有与该帧连接的结点都会被更新，两者的连接边将被删除。本质图基于这棵生成树构建，它还包含了共视图中共视性较高的边（边权$\theta \ge 100$）以及闭环边。从图的规模角度来说，共视图 &gt; 本质图 &gt; 生成树。</p>
+<p><img src="https://leanote.com/api/file/getImage?fileId=5c813654ab644140b1003d65" alt></p>
+<h3 id="Bags-of-Words-Place-Recognition"><a href="#Bags-of-Words-Place-Recognition" class="headerlink" title="Bags of Words Place Recognition"></a>Bags of Words Place Recognition</h3><p>ORB-SLAM系统内嵌了一个基于DBoW2的词袋场景识别模块，用于闭环检测和重定位。一张图像输入词袋模型后，会得到它对应的视觉单词向量。视觉单词(visual word)是特征描述符空间的离散化，这种表示被称为视觉词典(visual vocabulary)。视觉词典是在大量图片上提取ORB描述符离线创建的，所有不同的描述符构成词典。如果这些图片足够通用，那么相同的单词就能被用在不同的环境中。词典中的每个视觉单词代表一个描述符。假设词典中包含n个单词，则一张图片可以转换为一个n维的向量，其中维度$i$上的值代表词典中序号为$i$的单词在图片中的出现次数。</p>
+<p>系统维护了一个增量式的数据库，它存储了词典的每个单词到观测该视觉单词的关键帧序列的映射。这种映射关系使得识别两个场景时能获得比较高效的性能，代价就是要对关键帧的插入和删除作相应的数据结构维护工作。</p>
+<p>由于相邻的关键帧之间存在视觉重叠，查询数据库时不会仅仅返回一个高分值的唯一解。原始的DBoW2考虑了这个情况，合计了插入时间相近的图片的分数。但它没有包括那些观测到同一个地方、但插入时间不同的关键帧，因为这些关键帧的插入时间可能相隔”不近“。ORB-SLAM通过对共视图进行分组更好地解决了这个问题。</p>
+<h2 id="Automatic-Map-Initialization"><a href="#Automatic-Map-Initialization" class="headerlink" title="Automatic Map Initialization"></a>Automatic Map Initialization</h2><p>单目SLAM中的初始化步骤目的是计算两帧间的相对位姿，然后利用三角化求得地图点的初始集合。当场景是平面和非平面时，计算方法大相径庭。传统的初始化方法都是假设了场景的情况，固定使用一种计算方法，这使得算法的用途较为局限。为了自动化初始化过程同时又不至于耗费过多时间，ORB-SLAM并发地使用这两种场景的对应方法进行计算，然后启发式地选择模型和尝试恢复相对位姿。整个过程重复进行直到获得确定解。</p>
+<p>ORB-SLAM的地图初始化算法的详细步骤如下：</p>
+<ol>
+<li>查询初始匹配对：提取当前帧$F_c$的ORB特征，查找$F_c$和引用帧$F_r$的匹配对。如果找不到足够的匹配对，则重置引用帧。</li>
+<li>并发计算模型的两种方法：迭代地在并发的线程里计算单应矩阵$H_{cr}$和基础矩阵$F_{cr}$。每轮迭代都对模型进行评分。如果计算都失败了，则重新从步骤1开始。</li>
+<li>选择模型：当模型不适合实际场景时，将计算出错误的结果。因此选择评分较大的模型作为结果即可。</li>
+<li>恢复运动结构：一旦完成模型的选择，就从模型中提取运动假设。<ul>
+<li>在单应的情况下，使用Faugeras and Lustman提出的方法获取八个运动假设，然后对它们进行三角化并检查是否存在一个解，该解观测到大部分的点并且都在相机的视线前方，同时又具有较低的投影误差。如果找不到这样解，回到步骤1。</li>
+<li>在非单应的情况下，用基础矩阵求本质矩阵，然后利用奇异值分解获取四个运动假设。接着对它们进行三角化，即可得重建结果。</li>
+</ul>
+</li>
+<li>BA优化：最后执行Full BA精调初始化获得的重建结果。</li>
+</ol>
+<h2 id="Tracking"><a href="#Tracking" class="headerlink" title="Tracking"></a>Tracking</h2><p>Tracking线程负责相机位姿的追踪，它计算当前帧的位姿，对它进行估计和优化。</p>
+<h3 id="ORB-Extraction"><a href="#ORB-Extraction" class="headerlink" title="ORB Extraction"></a>ORB Extraction</h3><p>首先要做的工作是提取当前帧的ORB特征。先用FAST角点提取图像帧中的角点，然后在角点上计算ORB描述符和视角方向。这些ORB描述符将被用于所有跟特征匹配相关的地方。</p>
+<p>FAST角点的参数设为8个尺度级别，尺度因子为1.2。对于分辨率在512x384到752x480之间的图片，提取1000个角点；对于分辨率更高的图片，则提取2000个角点。</p>
+<h3 id="Initial-Pose-Estimation-From-Previous-Frame"><a href="#Initial-Pose-Estimation-From-Previous-Frame" class="headerlink" title="Initial Pose Estimation From Previous Frame"></a>Initial Pose Estimation From Previous Frame</h3><p>如果上一帧追踪成功，那么使用匀速运动模型(constant velocity motion model)预测当前帧的相机位姿并且导向性搜索上一帧观测到的地图点。如果找不到足够多的地图点，就用更宽的窗口进行搜索。最后用这些地图点和当前帧的匹配对优化位姿。</p>
+<h3 id="Initial-Pose-Estimation-via-Global-Relocalization"><a href="#Initial-Pose-Estimation-via-Global-Relocalization" class="headerlink" title="Initial Pose Estimation via Global Relocalization"></a>Initial Pose Estimation via Global Relocalization</h3><p>如果上一帧追踪失败（即追踪丢失），那么就提取当前帧的词袋向量查询场景识别数据库，得到候选关键帧后进行全局重定位。首先计算当前帧和候选关键帧的地图点匹配对，对每个关键帧执行RANSAC迭代和尝试用PnP求解相机位姿。如果找到内点足够多的相机位姿，优化它，然后继续下一帧的追踪。</p>
+<h3 id="Track-Local-Map"><a href="#Track-Local-Map" class="headerlink" title="Track Local Map"></a>Track Local Map</h3><p>一旦获得了当前帧的位姿估计及相关的特征匹配对，就可以搜索地图获得更多匹配的地图点对位姿进行优化。由于地图是增量式的，为了限制该步骤的复杂度，只对地图的一个局部区域进行处理。</p>
+<p>局部地图由集合$K_1$、$K_2$以及引用帧$K_{ref}$组成。$K_1$由与当前帧共视的关键帧组成；$K_2$由在共视图上与$K_1$中的关键帧相邻的关键帧组成；引用帧$K_{ref}$是$K_1$中与当前帧具有最多共视地图点的关键帧。</p>
+<h3 id="New-Keyframe-Decision"><a href="#New-Keyframe-Decision" class="headerlink" title="New Keyframe Decision"></a>New Keyframe Decision</h3><p>追踪的最后一步是决定当前帧是否需要作为新的关键帧。由于Local Mapping中有冗余关键帧剔除策略，因此此处的插入越快越好，因为这样做会使得追踪具有更多可用于分析的信息，从而更加鲁棒。当系统满足以下所有条件时，将当前帧作为新关键帧插入地图：</p>
+<ol>
+<li>上一次重定位到现在至少经过了20个帧。</li>
+<li>Local Mapping空闲，或者自上一次插入关键帧到现在至少经过了20个关键帧。</li>
+<li>当前帧至少追踪了50个点。</li>
+<li>当前帧追踪的点低于引用帧$K_{ref}$的九成。</li>
+</ol>
+<p>条件1确保重定位良好，条件3确保追踪良好。如果插入新关键帧时Local Mapping忙碌，则发送信号给Local Mapping中断它的Local BA操作，使它尽可能快地处理新的关键帧。</p>
+<h2 id="Local-Mapping"><a href="#Local-Mapping" class="headerlink" title="Local Mapping"></a>Local Mapping</h2><p>Local Mapping管理新插入的关键帧$K_i$。新关键帧首先由Tracking决定，然后插入到Lcal Mapping的关键帧处理队列中。Local Mapping间歇地从睡眠中醒来，检查该队列是否非空，如果非空，则把关键帧逐个地取出并进行处理。关键帧的处理过程如下文所述。</p>
+<h3 id="Keyframe-Insertion"><a href="#Keyframe-Insertion" class="headerlink" title="Keyframe Insertion"></a>Keyframe Insertion</h3><ol>
+<li>首先是更新共视图，为新关键帧$K_i$添加一个新的结点，更新跟它共视的关键帧之间的边。</li>
+<li>接着更新生成树，将$K_i$链接到跟它共视最多的关键帧。</li>
+<li>然后计算关键帧$K_i$的词袋向量。词袋向量将在三角化点的数据关联步骤时派上用场。</li>
+</ol>
+<h3 id="Recent-Map-Points-Culling"><a href="#Recent-Map-Points-Culling" class="headerlink" title="Recent Map Points Culling"></a>Recent Map Points Culling</h3><p>由于数据关联可能有误，新关键帧的地图点的三角化测量值可能是错误的。为了避免地图点存在这样的情况并且确保它们可追踪，创建后的地图点在接下来的三个关键帧内要满足以下条件，否则将被从地图中删除：</p>
+<ol>
+<li>跟踪必须在超过预测该地图点可见帧的25%的帧中找到该点。</li>
+<li>在创建该地图点后，如果有超过1个关键帧被加入地图，那么至少有三个关键帧都观测到该点。</li>
+</ol>
+<p>一旦一个地图点满足了这样的条件，它就仅可能由于关键帧剔除和Local BA的外点剔除导致少于三个关键帧观测到它而被移除。这种策略使得地图包含很少外点。</p>
+<h3 id="New-Map-Point-Creation"><a href="#New-Map-Point-Creation" class="headerlink" title="New Map Point Creation"></a>New Map Point Creation</h3><p>新地图点通过三角化与新关键帧$K_i$在共视图上相邻的关键帧集$K_c$的ORB特征来创建。对$K_i$中没有匹配对的特征，我们查找不在$K_c$中的关键帧跟它的匹配对。利用这些匹配对，对ORB特征进行三角化，估计其深度值。为了将它接受为新地图点，还需要检查它的深度值是否为正、投影误差以及尺度一致性等属性。</p>
+<h3 id="Local-Bundle-Adjustment"><a href="#Local-Bundle-Adjustment" class="headerlink" title="Local Bundle Adjustment"></a>Local Bundle Adjustment</h3><p>Local BA优化关键帧$K_i$及其共视图邻帧集合$K_c$中的每一个关键帧的位姿以及它们共视的地图点。所有其他也观测到这些地图点但跟$K_i$不相连的关键帧的信息会被用于优化，但它们的位姿不会被优化。在优化时被标记为外点的观测将被丢弃。</p>
+<h3 id="Local-Keyframe-Culling"><a href="#Local-Keyframe-Culling" class="headerlink" title="Local Keyframe Culling"></a>Local Keyframe Culling</h3><p>为了获得简洁紧凑的几何重建，Local Mapping会尝试检测和删除冗余的关键帧。该策略限制了BA操作的复杂性增长，允许系统可以长期运行。我们丢弃$K_c$中满足该条件的所有关键帧：该帧有90%的地图点已经在相同或更精细尺度的至少三个的其他关键帧中观测到。</p>
+<h2 id="Loop-Closing"><a href="#Loop-Closing" class="headerlink" title="Loop Closing"></a>Loop Closing</h2><p>Loop Closing接收Local Mapping最后处理的关键帧$K_i$（也就是当前关键帧），尝试检测和闭合回环。</p>
+<h3 id="Loop-Candidates-Detection"><a href="#Loop-Candidates-Detection" class="headerlink" title="Loop Candidates Detection"></a>Loop Candidates Detection</h3><p>首先计算关键帧$K_i$及它在共视图上的邻帧（$\theta_{min}=30$）的词袋向量的相似性，将相似性最低的评分记为$S_{min}$。接着查询场景识别数据库，返回数据库中相似性评分不低于$S_{min}$的关键帧作为候选帧。特别地，与$K_i$直接连接的关键帧将被从候选帧中剔除。为了接受一个回环候选帧，必须连续检测到三个一致的回环候选帧。一般来说，有多少跟$K_i$相似的场景，就会有多少个回环候选帧。</p>
+<h3 id="Compute-the-Similarity-Transformation"><a href="#Compute-the-Similarity-Transformation" class="headerlink" title="Compute the Similarity Transformation"></a>Compute the Similarity Transformation</h3><p>得到候选帧后，计算当前关键帧$K_i$和候选帧之间的相似变换。变换信息告知我们回环中积累的误差，也验证了回环的几何约束。</p>
+<p>首先计算当前关键帧和候选关键帧的ORB匹配对，然后执行RANSAC操作，使用Horn提出的方法求相似变换<sup><a href="#fn_7" id="reffn_7">7</a></sup>。如果求得一个具备足够内点的相似变换$S_{il}$，则对它进行优化并执行导向搜索以搜索更多匹配对。最后再执行一次优化，如果此时还有足够多的内点，那么接受该回环。</p>
+<blockquote id="fn_7">
+<sup>7</sup>. Horn B K P . Closed-form solution of absolute orientation using unit quaternions[J]. J.opt.soc.am.a, 1987, 5(7):1127-1135.<a href="#reffn_7" title="Jump back to footnote [7] in the text."> &#8617;</a>
+</blockquote>
+<h3 id="Loop-Fusion"><a href="#Loop-Fusion" class="headerlink" title="Loop Fusion"></a>Loop Fusion</h3><p>获得回环后，系统便执行回环修正操作。第一步工作是融合冗余的地图点和在共视图上插入回环边。首先，当前关键帧$K_i$的位姿$T_{iw}$将利用先前求得的相似变换$S_{il}$修正，然后修正值会传播到它的邻帧上。所有回环帧观测到的地图点以及它的邻帧都被投影到$K_i$，系统使用一个较小的窗口搜索回环帧和邻帧的匹配对，融合这些匹配对和属于内点的地图点。涉及到该过程的关键帧都会在共视图上各自新增一条到回环帧的边。</p>
+<h3 id="Essential-Graph-Optimization"><a href="#Essential-Graph-Optimization" class="headerlink" title="Essential Graph Optimization"></a>Essential Graph Optimization</h3><p>为了高效地闭合回环，系统在本质图上执行位姿图优化。具体过程在前文概述部分已经阐述，此处不再重复说明。</p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="http://gaunthan.leanote.com">Gaunthan Huang</a>
+            </p><p>原文链接：<a href="http://gaunthan.leanote.com/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">http://gaunthan.leanote.com/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/</a>
+            </p><p>发表日期：<a href="http://gaunthan.leanote.com/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">November 19th 2018, 2:27:30 am</a>
+            </p><p>更新日期：<a href="http://gaunthan.leanote.com/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">March 7th 2019, 3:16:21 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+        </li>
+        <li class="previous">
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:gaunthanhuang at foxmail dot com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/gaunthan" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Related-Work"><span class="toc-number">2.</span> <span class="toc-text">Related Work</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Place-Recognition"><span class="toc-number">2.1.</span> <span class="toc-text">Place Recognition</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-Initialization"><span class="toc-number">2.2.</span> <span class="toc-text">Map Initialization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Monocular-Simultaneous-Localization-and-Mapping"><span class="toc-number">2.3.</span> <span class="toc-text">Monocular Simultaneous Localization and Mapping</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#System-Overview"><span class="toc-number">3.</span> <span class="toc-text">System Overview</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Framework"><span class="toc-number">3.1.</span> <span class="toc-text">Framework</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Feature-Choice"><span class="toc-number">3.2.</span> <span class="toc-text">Feature Choice</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map-Points-Keyframes"><span class="toc-number">3.3.</span> <span class="toc-text">Map Points, Keyframes</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Covisibility-Graph-and-Essential-Graph"><span class="toc-number">3.4.</span> <span class="toc-text">Covisibility Graph and Essential Graph</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Bags-of-Words-Place-Recognition"><span class="toc-number">3.5.</span> <span class="toc-text">Bags of Words Place Recognition</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Automatic-Map-Initialization"><span class="toc-number">4.</span> <span class="toc-text">Automatic Map Initialization</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Tracking"><span class="toc-number">5.</span> <span class="toc-text">Tracking</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#ORB-Extraction"><span class="toc-number">5.1.</span> <span class="toc-text">ORB Extraction</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Initial-Pose-Estimation-From-Previous-Frame"><span class="toc-number">5.2.</span> <span class="toc-text">Initial Pose Estimation From Previous Frame</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Initial-Pose-Estimation-via-Global-Relocalization"><span class="toc-number">5.3.</span> <span class="toc-text">Initial Pose Estimation via Global Relocalization</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Track-Local-Map"><span class="toc-number">5.4.</span> <span class="toc-text">Track Local Map</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#New-Keyframe-Decision"><span class="toc-number">5.5.</span> <span class="toc-text">New Keyframe Decision</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Local-Mapping"><span class="toc-number">6.</span> <span class="toc-text">Local Mapping</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Keyframe-Insertion"><span class="toc-number">6.1.</span> <span class="toc-text">Keyframe Insertion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Recent-Map-Points-Culling"><span class="toc-number">6.2.</span> <span class="toc-text">Recent Map Points Culling</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#New-Map-Point-Creation"><span class="toc-number">6.3.</span> <span class="toc-text">New Map Point Creation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Local-Bundle-Adjustment"><span class="toc-number">6.4.</span> <span class="toc-text">Local Bundle Adjustment</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Local-Keyframe-Culling"><span class="toc-number">6.5.</span> <span class="toc-text">Local Keyframe Culling</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Loop-Closing"><span class="toc-number">7.</span> <span class="toc-text">Loop Closing</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Loop-Candidates-Detection"><span class="toc-number">7.1.</span> <span class="toc-text">Loop Candidates Detection</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Compute-the-Similarity-Transformation"><span class="toc-number">7.2.</span> <span class="toc-text">Compute the Similarity Transformation</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Loop-Fusion"><span class="toc-number">7.3.</span> <span class="toc-text">Loop Fusion</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Essential-Graph-Optimization"><span class="toc-number">7.4.</span> <span class="toc-text">Essential Graph Optimization</span></a></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 1
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Gaunthan Huang"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</body>
+</html>
+
+
