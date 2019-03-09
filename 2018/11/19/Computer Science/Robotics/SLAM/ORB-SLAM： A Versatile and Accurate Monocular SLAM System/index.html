@@ -470,7 +470,7 @@ height:50vh;
 <p>ORB-SLAM也从论文<sup><a href="#fn_7" id="reffn_7">7</a></sup>中汲取了许多思想。这篇论文使用了两个窗口进行优化——内窗口只关注局部区域，执行BA优化；外窗口执行尺度受限的位姿图优化。但与它不同的是，ORB-SLAM重新设计了前端和后端，而且对追踪和建图使用了同样的特征（ORB特征）。</p>
 <p>ORB-SLAM的一大重点是关键帧选择方法。PTAM使用严格的挑选策略，在环境条件较差时算法容易失败。考虑到这一点，ORB-SLAM使用了鲁棒性更好的策略——适者生存策略：尽可能快地插入关键帧，但严格地淘汰掉冗余的关键帧，避免额外的代价。</p>
 <h2 id="System-Overview"><a href="#System-Overview" class="headerlink" title="System Overview"></a>System Overview</h2><h3 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h3><p>ORB-SLAM系统由三个线程组成：Tracking（追踪）、Local Mapping（局部建图）和Loop Closing（闭环）。系统的框架如下所示：</p>
-<p><img src="https://leanote.com/api/file/getImage?fileId=5c813654ab644140b1003d66" alt></p>
+<p><img src="/images/5c813654ab644140b1003d66.png" alt></p>
 <p>Tracking负责定位相机每帧的位姿以及决定插入新关键帧的时机。它首先将当前帧与上一帧进行特征匹配和位姿计算，利用Motion-only BA对该位姿进行优化。如果追踪失败，就使用场景识别模块进行全局重定位。一旦获得相机位姿的初始估计和特征匹配对，就在共视图上提取一个共视的局部地图（由跟当前帧共视的关键帧组成），接着使用重投影搜索当前帧和地图点的匹配对，用这些匹配对进行位姿的进一步优化。最终，决定是否需要插入新的关键帧。</p>
 <p>Local Mapping处理新的关键帧和执行Local BA实现相机位姿局部区域的最优重建。该线程也负责冗余关键帧的去除。</p>
 <p>Loop Closing在每个关键帧上搜索回环。一旦检测到回环，就计算场景的相似性（相似的程度表征了回环累积漂移的多少）。然后对回环进行配准，融合重复的地图点。最后使用相似性约束进行位姿图优化，实现全局一致性。</p>
@@ -493,7 +493,7 @@ height:50vh;
 <h3 id="Covisibility-Graph-and-Essential-Graph"><a href="#Covisibility-Graph-and-Essential-Graph" class="headerlink" title="Covisibility Graph and Essential Graph"></a>Covisibility Graph and Essential Graph</h3><p>关键帧之间的共视信息对系统的几个任务都大有裨益，这些信息用一个无向权重图来表征，这个图被称为共视图(covisibility graph)。图的结点代表关键帧，结点的边代表两个关键帧共同观测到15个以上的地图点，边权$\theta$表征了共视的地图点的数量。两个关键帧共视得越多，其边权越大。</p>
 <p>在Loop Closing中，一个很关键的操作是修正回环。检测只是其第一步。为了修正一个回环，系统执行一个位姿图优化(pose graph optimization)，将修正信息分配到整个图上。由于共视图往往十分稠密，直接处理整张图可能会导致计算时间过长。为了不对所有的边进行操作，可以使用另一个图——本质图(essential graph)。本质图包含原图所有的结点，但少了一部分边。可以把本质图理解为共视图的核心部分，通过刻意裁剪掉一些不那么重要的边，使得操作结果保持准确的同时又提高其执行效率。</p>
 <p>系统从第一个初始关键帧开始，增量地构建一棵生成树，它是共视图边数最少的连接子图。当插入新关键帧时，代表该帧的新结点被连接到图中与它共视最多的结点上。当通过剔除策略删除关键帧时，所有与该帧连接的结点都会被更新，两者的连接边将被删除。本质图基于这棵生成树构建，它还包含了共视图中共视性较高的边（边权$\theta \ge 100$）以及闭环边。从图的规模角度来说，共视图 &gt; 本质图 &gt; 生成树。</p>
-<p><img src="https://leanote.com/api/file/getImage?fileId=5c813654ab644140b1003d65" alt></p>
+<p><img src="/images/5c813654ab644140b1003d65.png" alt></p>
 <h3 id="Bags-of-Words-Place-Recognition"><a href="#Bags-of-Words-Place-Recognition" class="headerlink" title="Bags of Words Place Recognition"></a>Bags of Words Place Recognition</h3><p>ORB-SLAM系统内嵌了一个基于DBoW2的词袋场景识别模块，用于闭环检测和重定位。一张图像输入词袋模型后，会得到它对应的视觉单词向量。视觉单词(visual word)是特征描述符空间的离散化，这种表示被称为视觉词典(visual vocabulary)。视觉词典是在大量图片上提取ORB描述符离线创建的，所有不同的描述符构成词典。如果这些图片足够通用，那么相同的单词就能被用在不同的环境中。词典中的每个视觉单词代表一个描述符。假设词典中包含n个单词，则一张图片可以转换为一个n维的向量，其中维度$i$上的值代表词典中序号为$i$的单词在图片中的出现次数。</p>
 <p>系统维护了一个增量式的数据库，它存储了词典的每个单词到观测该视觉单词的关键帧序列的映射。这种映射关系使得识别两个场景时能获得比较高效的性能，代价就是要对关键帧的插入和删除作相应的数据结构维护工作。</p>
 <p>由于相邻的关键帧之间存在视觉重叠，查询数据库时不会仅仅返回一个高分值的唯一解。原始的DBoW2考虑了这个情况，合计了插入时间相近的图片的分数。但它没有包括那些观测到同一个地方、但插入时间不同的关键帧，因为这些关键帧的插入时间可能相隔”不近“。ORB-SLAM通过对共视图进行分组更好地解决了这个问题。</p>
