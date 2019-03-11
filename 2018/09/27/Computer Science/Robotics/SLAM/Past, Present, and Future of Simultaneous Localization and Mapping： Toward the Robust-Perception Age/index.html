@@ -1,0 +1,917 @@
+<!DOCTYPE html>
+<html lang="Chinese">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Gaunthan Huang">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Gaunthan Huang">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md · Gaunthan&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">gaunthan&#39;s blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">gaunthan's blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            Past, Present, and Future of Simultaneous Localization and Mapping： Toward th...
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Paper Review">Paper Review</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">6.5k</span>阅读时长: <span class="post-count reading-time">23 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/09/27</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p><a href="https://arxiv.org/pdf/1606.05830.pdf" target="_blank" rel="noopener">Cadena, C., Carlone, L., Carrillo, H., Latif, Y., Scaramuzza, D., Neira, J., … &amp; Leonard, J. J. (2016). Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age. IEEE Transactions on Robotics, 32(6), 1309-1332.</a></p>
+</blockquote>
+<h2 id="评述"><a href="#评述" class="headerlink" title="评述"></a>评述</h2><p>这是一篇综述论文，阐述了SLAM研究过程中涌现的主要方法和技术，详细地讨论了各种方法的优劣，并揭露了目前的SLAM方法存在的问题，同时指引了SLAM的下一步研究方向。文章通过查证各种资料，科学地回答了“是否需要SLAM”和“SLAM是否已经解决”这两个问题。</p>
+<p>论文没有过多的数学推导内容，着重点在于对SLAM的以下几个方面进行阐述：</p>
+<ul>
+<li>现代SLAM系统的架构</li>
+<li>长期SLAM系统的鲁棒性与尺度性问题</li>
+<li>SLAM中的环境表征模型：度量地图、语义地图</li>
+<li>SLAM方法的理论工具</li>
+<li>主动运动以改进表现的SLAM系统</li>
+<li>新颖的传感器与深度学习方法</li>
+</ul>
+<p>读者可以根据自己的需要，直接跳到相应章节获取相关内容。论文文字较多，需要细细品读。</p>
+<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><h3 id="发展历程"><a href="#发展历程" class="headerlink" title="发展历程"></a>发展历程</h3><p>SLAM的发展可以分为三个纪元：</p>
+<ul>
+<li>经典时期(Classic Age, 1986-2004)：定义了SLAM问题的概率方法，并提出了以EKF(Extended Kalman Filters)、PF(Rao-Blackwellizaed Particle Filters)为代表的基于滤波器的方法和最大似然估计(MLE, Maximum Likelihood Estimation)方法。这一时期还遇到了效率和鲁棒数据关联方面的挑战。</li>
+<li>算法分析时期(Algorithmic-analysis Age, 2004-2015)：对SLAM的可观察性、收敛性和一致性等基础属性进行了研究。该时期最为关键的是发现了优化方法中增量方程的海塞矩阵的稀疏性，并意识到这一稀疏结构可以天然地用图优化来表示。因此，这一时期还产出了高效的SLAM求解方法和相关代码库。<br><img src="/images/5bac447eab64413d08001e6d.png" alt></li>
+<li>鲁棒感知时期(Robust-Perception Age, 2016-)：现代SLAM系统要求能够长期稳定地运行，算法的鲁棒性变得尤其重要。在大规模场景、高速运动、多动态物等情况下，传统SLAM方法都不可避免地遭遇了各种各样的问题。这一时期有三个关键概念：<ul>
+<li>鲁棒性能(Robust Performance)：系统具有较低的错误率(low failure rate)、错误安全机制(fail-safe machanisms)以及自调参能力(self-tuning capabilities)。</li>
+<li>高层理解(High-Level Understanding)：能够理解环境的高层信息（语义、物理属性、功能可见性等）。</li>
+<li>资源意识(Resource Awareness)：能够根据可利用的资源自动调整计算负载。</li>
+<li>任务驱动的感知(Task-Driven Perceptio)：能够根据任务需要，感知/过滤相关信息。</li>
+</ul>
+</li>
+</ul>
+<h3 id="我们是否真的需要SLAM？"><a href="#我们是否真的需要SLAM？" class="headerlink" title="我们是否真的需要SLAM？"></a>我们是否真的需要SLAM？</h3><p>在GPS定位与城市地图如此精确的现在，我们的脑海中很容易冒出一个疑问：“机器人真的需要SLAM吗？”我们不能肯定SLAM在每个地方都能派上用场，但至少我们可以确定，在GPS无法正常工作的室内环境、在高度动态变化的环境中、在传感器质量很低等各种条件下，SLAM的作用是毋庸置疑的。因此，我们确实仍然需要SLAM。或者说，我们需要SLAM提供的自主能力，否则机器人将不能“与时俱进”。</p>
+<h3 id="SLAM是否已经被解决了？"><a href="#SLAM是否已经被解决了？" class="headerlink" title="SLAM是否已经被解决了？"></a>SLAM是否已经被解决了？</h3><p>由于SLAM的内容很庞大，又受到机器人、环境、性能要求等因素的影响，导致这个问题很难准确地回答。我们可以说，在某些情况下SLAM问题确确实实被很好的解决了，但换一种环境，也许同样的方法便不再奏效。</p>
+<p>例如，配置了激光雷达的轮式机器人能够很好地完成室内2D建图任务，，可以说这种情况下的SLAM问题已经被解决了。而基于视觉的慢速移动机器人却只能认为相关研究趋于成熟而已。虽然SLAM在许多场景下都取得了不错的效果，可在动态环境中或对高速运动的机器人来说，SLAM仍然是举步维艰，处处碰壁。</p>
+<h2 id="现代SLAM系统的架构"><a href="#现代SLAM系统的架构" class="headerlink" title="现代SLAM系统的架构"></a>现代SLAM系统的架构</h2><h3 id="后端"><a href="#后端" class="headerlink" title="后端"></a>后端</h3><p>现代SLAM通常被形式化成最大后验概率(Maximum A Posteriori, MAP)估计问题，而且可以使用因子图(factor graphs)对变量之间的关系进行合理的解释。</p>
+<h4 id="最大后验概率估计"><a href="#最大后验概率估计" class="headerlink" title="最大后验概率估计"></a>最大后验概率估计</h4><p>在SLAM中，我们用$X$代表需要估计的状态（通常是机器人的位置坐标和朝向），$Z$代表环境观测数据（通常是环境中的地标的位置），那么该问题可以形式化成如下式子：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} p(X|Z)</script><p>根据贝叶斯法则，上式等价于：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} p(Z|X)p(X) \tag{1}</script><p>式中的$p(X)$代表对$X$的先验知识，如果我们对机器人的状态一无所知，那么$p(X)$就会成为一个常数，因此可以从上式中移除。最终该问题会转化成最大似然估计(Maximum Likelihood Estimation, MLE)问题：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} p(Z|X)</script><p>如果假设观测数据是独立的（即它们的噪声互不相关），则可如下进一步形式化式(1)：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} p(X) \prod_{k=1}^m p(z_k|X)</script><p>注意到$z_k$仅与$X_k$相关，因此上式等价于：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} p(X) \prod_{k=1}^m p(z_k|X_k) \tag{2}</script><h4 id="因子图"><a href="#因子图" class="headerlink" title="因子图"></a>因子图</h4><p>式(2)可以用因子图来表示，变量对应着图中的结点，$p(z_k|X_k)$和先验$p(X)$被称作因子(factor)，图中的边表示了不同因子之间的概率约束：</p>
+<p><img src="/images/5bad8922ab64411b040006da.png" alt></p>
+<p>因子用黑色的方块表示，p代表先验，u代表里程计信息，v代表相机观测（也就是式子中的z），c代表闭环检测。蓝色圆圈表示机器人各个时刻的位姿，绿色圆圈代表地标的位置，红色圆圈代表相机内参。从因子图中可以清晰地发现各个项之间的约束关系。</p>
+<h4 id="高斯系统"><a href="#高斯系统" class="headerlink" title="高斯系统"></a>高斯系统</h4><p>仅仅有式(2)是不能使用的，我们需要具体化式中的概率项。我们知道，观测可以表示成机器人位姿的函数加上噪声项，即：</p>
+<script type="math/tex; mode=display">z_k = h(X_k) + \epsilon_k</script><p>如果假设噪声项服从均值为零、信息矩阵为$\Omega_k$（协方差矩阵的逆）的高斯分布，则：</p>
+<script type="math/tex; mode=display">p(z_k|X_k) \propto exp \left( -{1 \over 2} ||h_k(X_k) - z_k||_{\Omega_k}^2 \right) \tag{3}</script><p>记号$||e||_\Omega^2 = e^T \Omega e$。类似的，先验可表示为$p(X) \propto exp(- {1 \over 2} ||h_0(X) - z_0||_{\Omega_0}^2)$。因为最大后验概率等价于最小负对数后验概率，因此式(2)等价于：</p>
+<script type="math/tex; mode=display">X^* = \underset{X}{\operatorname{argmax}} -log \left( p(X) \prod_{k=1}^m p(z_k|X_k) \right) 
+= \underset{X}{\operatorname{argmin}} \sum_{k=0}^m ||h_k(X_k) - z_k||_{\Omega_k}^2   \tag{4}</script><p>该式是一个最小二乘问题(Least Squares Problem, LS Problem)，可用梯度下降等优化算法求解。注意该式是由假设噪声服从高斯分布而推导出的，不同的噪声分布假设将推导出不同的目标函数。例如，若假设噪声服从拉普拉斯分布(Laplace distribution)，则上式中的L2项变为L1项。为了鲁棒性，还可以将L2项替换为其他鲁棒损失函数(如Huber or Tukey Loss)。</p>
+<h4 id="LS-Problem与BA"><a href="#LS-Problem与BA" class="headerlink" title="LS Problem与BA"></a>LS Problem与BA</h4><p>看起来式子(4)与三维结构重建中的Bundle Adjustment(BA)非常相似，实际上它们有两点不同：</p>
+<ul>
+<li>式(4)中的因子并不像BA一样受模型的投影几何约束。</li>
+<li>式(4)通常需要增量式求解。</li>
+</ul>
+<p>可见，BA更像是离线的几何约束优化问题。在ORB-SLAM中，BA放置在一个独立的线程中，定期地被运行以进行全局的优化。</p>
+<h3 id="前端"><a href="#前端" class="headerlink" title="前端"></a>前端</h3><p>式(4)中还存在一个问题，函数$h_k$的定义是什么？如果机器人的位姿与环境观测存在线性关系，那这个函数可以定义为一个线性方程。然而在现实中，它们之间往往是复杂的非线性关系，并且很难被形式化。因此，在SLAM框架中，还存在着一个前端(front end)，它从原始的传感器数据中提取关键特征（即地标），并将它关联到机器人某时刻的位姿。这一步骤也称为数据关联(data association)。</p>
+<p>前端可能还需要为式(4)中的变量提供初始值。例如，在基于特征的单目视觉SLAM中，前端就需要通过在多个视角下对地标进行三角化，处理地标的初始化。</p>
+<h2 id="长期SLAM系统的鲁棒性与尺度性问题"><a href="#长期SLAM系统的鲁棒性与尺度性问题" class="headerlink" title="长期SLAM系统的鲁棒性与尺度性问题"></a>长期SLAM系统的鲁棒性与尺度性问题</h2><h3 id="鲁棒性"><a href="#鲁棒性" class="headerlink" title="鲁棒性"></a>鲁棒性</h3><p>SLAM系统可能不如我们认为得那般稳定，它可能在许多情况下失败，这些失败可以是算法上的，也可以是硬件相关的。例如，算法没有考虑在高度动态或粗糙的环境中会遭遇的问题；又或者因为使用时间过长，硬件（传感器）劣化。为使SLAM长期稳定工作，我们需要认真地考虑这些因素，并提供鲁棒的处理方案。</p>
+<h4 id="鲁棒算法"><a href="#鲁棒算法" class="headerlink" title="鲁棒算法"></a>鲁棒算法</h4><p>我们知道，闭环检测能够有效地消除里程计中的累积误差。然而，一个错误的闭环检测，可能直接导致SLAM估计出不准确的状态甚至于构建出错误的地图。闭环检测算法应该是鲁棒的，即使检测错误也不至于过度影响系统的运作。</p>
+<p>而在动态环境中，许多SLAM算法都不能正常工作。问题来自于两个方面：一、系统必须能检测，忽略或追踪环境的变化；二、系统必须能对永久或半永久的变化进行建模，并知道何时和如何相应地更新地图。目前主流的方法都尝试忽略环境中的动态因素。</p>
+<h4 id="硬件相关错误"><a href="#硬件相关错误" class="headerlink" title="硬件相关错误"></a>硬件相关错误</h4><p>我们通常都假设硬件是稳定可靠的，然而当系统长期运行时，这样的假设变得越来越不可靠。如何检测硬件劣化、并相应地调整传感器的噪声模型是目前尚未解决的问题。进一步说，我们还需要一些方法解决来自不同传感器的冲突信息。</p>
+<h4 id="未解问题"><a href="#未解问题" class="headerlink" title="未解问题"></a>未解问题</h4><ul>
+<li>Failsafe and failure-aware with recovery：系统能够意识到即将发生的错误，并提供有效的恢复机制。</li>
+<li>Robustness to HW Failure：系统能够检测硬件劣化、并相应地调整传感器的噪声模型。</li>
+<li>Metric Relocalization：feature-based方法目前仍是度量重定位的标准，然而特征提取器在夜晚、季节变化这样的场景下缺乏足够的不变性，使得系统不能稳定地工作。与之相反，appearance-based能够在日夜和不同季节情况下正确地闭合回环。这一块仍然需要进一步的研究。</li>
+<li>Time Varying and Deformable Maps：主流SLAM方法都假设世界是固定和静态的，然而实际上这个世界无时无刻不在变化：时间一直在流逝，物体也发生内在变化。理想的SLAM方法应能够留意到环境的动态性（包括非固体物体），实时计算生成全地形的地图。</li>
+<li>Automatic Parameter Tuning：SLAM系统中经常有一些人工精心设置的参数（如特征匹配相关的阈值和RANSAC的参数等），这些参数往往是场景特定的。为使SLAM能够自主地在不同场景中正常工作，系统应能进行自动参数调优。</li>
+</ul>
+<h3 id="尺度性"><a href="#尺度性" class="headerlink" title="尺度性"></a>尺度性</h3><p>现代SLAM算法在大多数室内环境下都取得了不错的效果，然而，在许多其他应用中，机器人要处理的环境可能是没有边界的，如海洋探索、无间断清洁机器人等。在这类应用中，SLAM的因子图会不停地增长，对内存和计算资源的占用也会越来越多，最终会因系统资源不足而陷入失败。因此，设计计算和存储需求有上限的SLAM方法变得至关重要。</p>
+<h4 id="稀疏方法"><a href="#稀疏方法" class="headerlink" title="稀疏方法"></a>稀疏方法</h4><p>解决尺度性问题的一种方法是减少添加到因子图的结点数，或者对图中信息量过少的结点和因子进行剪枝。</p>
+<p>还有一种方法通过随时间流逝减少待估计的参数的数量来解决尺度问题，被称为<a href="https://scholar.google.com.hk/scholar?q=continuous-time+trajectory+estimation&amp;hl=en&amp;as_sdt=0&amp;as_vis=1&amp;oi=scholart" target="_blank" rel="noopener">连续时间轨迹估计</a>(continuous-time-trajectory estimation)。</p>
+<h4 id="多核并行方法"><a href="#多核并行方法" class="headerlink" title="多核并行方法"></a>多核并行方法</h4><p>既然担心因子图增长得过大，那不妨将它切割成子图，分别在不同的处理器核上并行地计算，最终再把结果加以合并和调整。这种方法被称为submappling。</p>
+<h4 id="分布式方法"><a href="#分布式方法" class="headerlink" title="分布式方法"></a>分布式方法</h4><p>机器人的硬件资源总是有限的，再强劲的处理器和再多的内存也总有耗尽的时候。既然一个机器人的资源是有限的，那加多几个机器人，让它们协同工作便是很直观的解决方案了。机器人之间的归属关系将该方法划分成两类：有中心和去中心的。借助于分布式，算法能获得接近于“无穷”的计算资源和存储容量。</p>
+<h4 id="未解问题-1"><a href="#未解问题-1" class="headerlink" title="未解问题"></a>未解问题</h4><ul>
+<li>Map Representation：在长期SLAM下如何保存地图是一个仍然未被大量探索的问题。即使将数据保存在云端（这意味着内存约束没那么严重），原始的点云数据也会浪费很多存储空间，特别是对vSLAM来说，如何存储特征点是一个让人头疼的问题。</li>
+<li>Learning, Forgetting, and Remembering：事物总是变化的，建图算法需要知道何时更新地图中的信息，并且决定信息何时会过期从而可以被丢弃。</li>
+<li>Robust Distributed Mapping：单机下的异常值剔除问题已经有了许多求解方法，而多机情况下的解决方法还没有怎么研究。多机带来了新的挑战：一、机器人之间可能没有共享相同的引用帧，导致更难检测和排除错误的回环；二、机器人需要从局部信息中检测出异常值。</li>
+<li>Resource-Constrained Platforms：许多SLAM算法都消耗不少资源，当将它们移植到资源受限的平台时（如智能手机、微型机器人），便会遇到严重的资源不足问题。设计资源自适应的算法能够进一步提高SLAM的应用场景。</li>
+</ul>
+<h2 id="SLAM中的环境表征模型"><a href="#SLAM中的环境表征模型" class="headerlink" title="SLAM中的环境表征模型"></a>SLAM中的环境表征模型</h2><h3 id="度量地图"><a href="#度量地图" class="headerlink" title="度量地图"></a>度量地图</h3><p>度量地图(Metric map)是一种编码了环境几何信息的符号结构，比较流行的几何建模方法是占据栅格地图(occupancy grid maps)和基于地标的地图(landmark-based maps)，它们多用于二维环境建图。当环境是三维的，几何建模要求更加细致，而如何高效地对三维几何进行建模仍处于初期研究阶段。</p>
+<h4 id="基于地标的稀疏表示"><a href="#基于地标的稀疏表示" class="headerlink" title="基于地标的稀疏表示"></a>基于地标的稀疏表示</h4><p>大多数SLAM方法都用一组稀疏的对应于环境离散特征的3D地标来表示场景，通常被称为基于地标或特征的表征(landmark-based or feature-based representations)，这些方法假设地标是容易辨别的。</p>
+<h4 id="低级原始稠密表征"><a href="#低级原始稠密表征" class="headerlink" title="低级原始稠密表征"></a>低级原始稠密表征</h4><p>与基于地标的表征相反，稠密表征试图提供三维几何的高分辨率模型，因此更适用于避障、可视化和渲染等领域。在稠密模型中，原始表征用大量无结构的点（云）来描述三维几何结构，这些点云可以通过RGBD摄像头轻易地获得。</p>
+<h4 id="边界表征"><a href="#边界表征" class="headerlink" title="边界表征"></a>边界表征</h4><p>边界表征(Boundary representations, b-reps)用三维物体的表面来定义它们，常见的方法有基于边缘的表征(curve-based representations)、网格曲面模型(surface mesh models)和隐式曲面模型(implicit surface representations)。</p>
+<h4 id="空间分割表征"><a href="#空间分割表征" class="headerlink" title="空间分割表征"></a>空间分割表征</h4><p>空间分割表征用一组连续无交集的图元来定义三维物体，最常见的表示方法是空间占据枚举(spatial-occupancy enumeration)，它将三维空间分解成大小相同的立方体(voxels)，布置在三维网格中。更高效的划分方法有八叉树(octree)和二进制空间分割树(Binary Space-Partitioning tree)等。octree目前已经用于机器人的三维建图。</p>
+<h4 id="基于物体的高层表征"><a href="#基于物体的高层表征" class="headerlink" title="基于物体的高层表征"></a>基于物体的高层表征</h4><p>点云和边界表征把物体都视为空间中的障碍物，这对诸如抓取、人机交互这样的应用来说不是一个好消息。基于物体的表征试图将物体建模为固体，以此允许它具有体积、质量等物理属性，能够更好地与外界进行交互。</p>
+<h4 id="未解问题-2"><a href="#未解问题-2" class="headerlink" title="未解问题"></a>未解问题</h4><ul>
+<li>High-Level Expressive Representations in SLAM：目前机器人社区集中于用点云等表征方法对三维几何进行建模，它们主要有两个缺点：浪费内存；无法提供高层理解。使用更紧凑的高层表征不仅为大规模地图压缩提供了天然的工具，更使得机器人对环境有了更好的理解，因此能更好地便利数据关联、场景识别、语义理解和人机交互。</li>
+<li>Optimal Representations：表征那么多种，哪种最好？或者说，什么场合下用哪种更好？如何比较不同表征以及决定哪种是给定场合的最佳表征也需要更进一步的研究。</li>
+<li>Automatic Adaptive Representations：为给定任务设计适用的表征不仅要求设计者拥有领域知识，而且还非常耗。此外，这种方式也缺少一定的灵活性：一旦决定，就不能更改。理想上，我们希望表征能够自适应于不同的任务和复杂度不同的环境。</li>
+</ul>
+<h3 id="语义地图"><a href="#语义地图" class="headerlink" title="语义地图"></a>语义地图</h3><p>语义地图将语义概念关联到机器人周边的几何实体上，相比于纯几何地图，它加强了机器人的自主性和鲁棒性，使其能处理更复杂的任务（如避开泥泞路面驾驶，从路径规划到任务规划等）。</p>
+<h4 id="语义概念"><a href="#语义概念" class="headerlink" title="语义概念"></a>语义概念</h4><ul>
+<li>详细程度：设计语义地图时需要明确语义概念的详细程度。“从房间A走到房间B”是一个粗力度的语义概念，而“拿起一个茶杯”则是比较细粒度的概念。</li>
+<li>组织结构：语义概念不是独立的，甚至许多概念还是相通的。一个简单的实体可能拥有无限的语义概念，这其中某些概念会与其他实体的概念相通。如椅子和桌子都是可移动的，但只有前者是可乘坐的。</li>
+</ul>
+<h4 id="SLAM与语义"><a href="#SLAM与语义" class="headerlink" title="SLAM与语义"></a>SLAM与语义</h4><ul>
+<li>SLAM助力语义。语义建图的研究始于将度量地图分割成语义概念，一种方法是将度量地图与分类好的语义场景数据进行融合。</li>
+<li>语义助力SLAM。如果我们能识别场景中的物体，那么我们就可以利用这些物体的先验知识改进地图。</li>
+<li>SLAM联合语义推论：有部分研究者将SLAM问题与语义分割问题联合起来求解，由于两者可以互相促进，因此这种方法可以获得更佳的表现。</li>
+</ul>
+<h4 id="未解问题-3"><a href="#未解问题-3" class="headerlink" title="未解问题"></a>未解问题</h4><ul>
+<li>Consistent Semantic-Metric Fusion：如何一致地融合不同时间点的度量数据和不同来源的语义信息仍然是一个开放式问题。</li>
+<li>Semantic Mapping is Much More Than a Categorization Problem：语义概念已经发展到更特化的信息，如地图中实体的功能可见性和可行动性以及环境中不同智能体的相互作用，如何表示这些属性和其中的相互作用是高级人机交互必将遭遇的挑战。</li>
+<li>Ignorance, Awareness, and Adaptation：机器人应能够发现环境中新增的物体或类别，从其他机器人或人类处学习新的属性，并能够将表征自适应于环境中缓慢或剧烈的变动。</li>
+<li>Semantic-Based Reasoning：机器人目前还不能高效和有效地利用环境中的语义概念定位和持续地建图，根本原因是它还缺乏基于语义的推理能力。</li>
+</ul>
+<h2 id="SLAM方法的理论工具"><a href="#SLAM方法的理论工具" class="headerlink" title="SLAM方法的理论工具"></a>SLAM方法的理论工具</h2><p>SLAM算法及实现通常只在少数几个问题实例上测试，很难知道它们对新问题的泛化程度。研究SLAM理论工具，不仅能很好地解决这个问题，还允许我们探究SLAM问题的内在属性、揭露违背直觉的经验总结。最重要的是，理论工具使我们能够衡量算法的边界，并清晰地给出算法的适用条件。</p>
+<p>早期的SLAM算法理论工具是基于EKF进行的，而到了现在，SLAM后端往往适用MAP解决估计问题，因此目前的理论研究工作重点放在了因子图优化上。</p>
+<h2 id="主动运动以改进表现的SLAM系统"><a href="#主动运动以改进表现的SLAM系统" class="headerlink" title="主动运动以改进表现的SLAM系统"></a>主动运动以改进表现的SLAM系统</h2><p>通常，我们都假定SLAM问题是与机器人的运动策略分离的，这杨会使得问题变得简单。然而，这种假设使得机器人丢失了主动观察的能力。有些研究讨论了如何利用机器人的运动能力提升建图和定位的效果，被称之为Active SLAM。</p>
+<p>Active SLAM是一个决策构建问题，而对于这类问题已经有了许多通用的框架。一个流行的Active SLAM框架把求解过程分成了三个部分，目的是在有限的候选动作中挑选出最好的那一个：</p>
+<ol>
+<li>机器人识别出可能的定位以供探索或利用；</li>
+<li>机器人计算每个有利位置的效用，选出最佳的那一个；</li>
+<li>机器人执行选定的动作，并决定是否需要继续进行下去。</li>
+</ol>
+<h3 id="未解问题-4"><a href="#未解问题-4" class="headerlink" title="未解问题"></a>未解问题</h3><ul>
+<li>Fast and Accurate Predictions of Future States：在Active SLAM中，机器人执行的每一个动作应该都能减少地图中的不确定性和提高定位的准确度，因此机器人必须能够预测未来行动的效果。为满足实时性要求，预测过程必须足够快。</li>
+<li>Enough is Enough: When do you stop doing active SLAM? Active SLAM是计算消耗型任务，因此我们需要知道什么时候停止它并切换回传统的SLAM方法。有效地处理好这个边界能够使得机器人拥有更好的灵活性。</li>
+<li>Performance Guarantees：由于很难精确地求解Active SLAM，因此我们需要对算法的边界进行研究，获得确切的性能边界。</li>
+</ul>
+<h2 id="新颖的传感器与学习方法"><a href="#新颖的传感器与学习方法" class="headerlink" title="新颖的传感器与学习方法"></a>新颖的传感器与学习方法</h2><h3 id="新型传感器"><a href="#新型传感器" class="headerlink" title="新型传感器"></a>新型传感器</h3><ul>
+<li>Range cameras：结构光相机已经在人脸识别领域发挥了不错的作用。由于它自身携带了光源，因此在黑暗和无纹理的场景下也能够很好的工作。</li>
+<li>Light-field cameras：不像传统相机仅记录每个像素的亮度，光域相机还记录了光线的方向，这种特性使得它在深度估计、降噪、视频稳定等问题上表现更加优异于传统相机。 </li>
+<li>Event-based cameras：传统相机以固定的帧率记录图像，而事件相机没有所谓帧率的概念，它将像素的变化作为一个事件返回给使用者。</li>
+</ul>
+<p>随着科技的发展，必将涌现出更多新型的传感器设备。有些设备通过了工业界的长期考验，而有些如昙花一现，早已消失在历史的长河中。我们不能确定谁最好，但我们能知道在一定的条件下，哪个（些）最适合。对各类新型传感器进行了解，能够为工程规划提供更多的灵活性。</p>
+<h3 id="深度学习方法"><a href="#深度学习方法" class="headerlink" title="深度学习方法"></a>深度学习方法</h3><p>许多研究已经说明了学习一个回归出图像帧间位姿的深度神经网络取代视觉里程计是可行的。也有研究用回归森林求出相机的六个自由度，或者用深度卷积神经网络估计场景的深度。尽管这些方法都取得了不错的成绩，但还无法取代传统方法，因为它们仍然面临许多严峻的问题。</p>
+<h4 id="未解问题-5"><a href="#未解问题-5" class="headerlink" title="未解问题"></a>未解问题</h4><ul>
+<li>Perceptual tool</li>
+<li>Practical deployment：深度学习模型通常需要在GPU上进行训练，由于机器人系统的硬件条件通常比较差，我们需要找到一种在嵌入式环境中仍然能够提供足够计算能力的方法。</li>
+<li>Online and life-long learning：深度学习模型通常在一个很大的数据集上离线训练，然后部署到生产环境中便（几乎）不再变更。然而机器人运行上实际环境中，而环境又往往是变化的，因此学习方法需要是线上和长期学习的，以适应环境的变化。</li>
+<li>Bootstrapping：场景的先验知识已经逐渐地表现出对SLAM系统有足够的提升。深度学习能够挖掘信息中的先验知识，如何更好地提取和使用这些信息仍然是开放的问题。</li>
+</ul>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="http://gaunthan.leanote.com">Gaunthan Huang</a>
+            </p><p>原文链接：<a href="http://gaunthan.leanote.com/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">http://gaunthan.leanote.com/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/</a>
+            </p><p>发表日期：<a href="http://gaunthan.leanote.com/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">September 27th 2018, 1:34:04 am</a>
+            </p><p>更新日期：<a href="http://gaunthan.leanote.com/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">March 11th 2019, 2:46:38 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/" title="ORB-SLAM2 Compiling Problems.md">
+                    <div class="nextTitle">ORB-SLAM2 Compiling Problems.md</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/" title="vSLAM中的闭环检测方法研究.md">
+                    <div class="prevTitle">vSLAM中的闭环检测方法研究.md</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:gaunthanhuang at foxmail dot com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/gaunthan" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#评述"><span class="toc-number">1.</span> <span class="toc-text">评述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">2.</span> <span class="toc-text">概述</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#发展历程"><span class="toc-number">2.1.</span> <span class="toc-text">发展历程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#我们是否真的需要SLAM？"><span class="toc-number">2.2.</span> <span class="toc-text">我们是否真的需要SLAM？</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SLAM是否已经被解决了？"><span class="toc-number">2.3.</span> <span class="toc-text">SLAM是否已经被解决了？</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#现代SLAM系统的架构"><span class="toc-number">3.</span> <span class="toc-text">现代SLAM系统的架构</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#后端"><span class="toc-number">3.1.</span> <span class="toc-text">后端</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#最大后验概率估计"><span class="toc-number">3.1.1.</span> <span class="toc-text">最大后验概率估计</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#因子图"><span class="toc-number">3.1.2.</span> <span class="toc-text">因子图</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#高斯系统"><span class="toc-number">3.1.3.</span> <span class="toc-text">高斯系统</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LS-Problem与BA"><span class="toc-number">3.1.4.</span> <span class="toc-text">LS Problem与BA</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#前端"><span class="toc-number">3.2.</span> <span class="toc-text">前端</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#长期SLAM系统的鲁棒性与尺度性问题"><span class="toc-number">4.</span> <span class="toc-text">长期SLAM系统的鲁棒性与尺度性问题</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#鲁棒性"><span class="toc-number">4.1.</span> <span class="toc-text">鲁棒性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#鲁棒算法"><span class="toc-number">4.1.1.</span> <span class="toc-text">鲁棒算法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#硬件相关错误"><span class="toc-number">4.1.2.</span> <span class="toc-text">硬件相关错误</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#未解问题"><span class="toc-number">4.1.3.</span> <span class="toc-text">未解问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#尺度性"><span class="toc-number">4.2.</span> <span class="toc-text">尺度性</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#稀疏方法"><span class="toc-number">4.2.1.</span> <span class="toc-text">稀疏方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#多核并行方法"><span class="toc-number">4.2.2.</span> <span class="toc-text">多核并行方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#分布式方法"><span class="toc-number">4.2.3.</span> <span class="toc-text">分布式方法</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#未解问题-1"><span class="toc-number">4.2.4.</span> <span class="toc-text">未解问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SLAM中的环境表征模型"><span class="toc-number">5.</span> <span class="toc-text">SLAM中的环境表征模型</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#度量地图"><span class="toc-number">5.1.</span> <span class="toc-text">度量地图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#基于地标的稀疏表示"><span class="toc-number">5.1.1.</span> <span class="toc-text">基于地标的稀疏表示</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#低级原始稠密表征"><span class="toc-number">5.1.2.</span> <span class="toc-text">低级原始稠密表征</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#边界表征"><span class="toc-number">5.1.3.</span> <span class="toc-text">边界表征</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#空间分割表征"><span class="toc-number">5.1.4.</span> <span class="toc-text">空间分割表征</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#基于物体的高层表征"><span class="toc-number">5.1.5.</span> <span class="toc-text">基于物体的高层表征</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#未解问题-2"><span class="toc-number">5.1.6.</span> <span class="toc-text">未解问题</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#语义地图"><span class="toc-number">5.2.</span> <span class="toc-text">语义地图</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#语义概念"><span class="toc-number">5.2.1.</span> <span class="toc-text">语义概念</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#SLAM与语义"><span class="toc-number">5.2.2.</span> <span class="toc-text">SLAM与语义</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#未解问题-3"><span class="toc-number">5.2.3.</span> <span class="toc-text">未解问题</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SLAM方法的理论工具"><span class="toc-number">6.</span> <span class="toc-text">SLAM方法的理论工具</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#主动运动以改进表现的SLAM系统"><span class="toc-number">7.</span> <span class="toc-text">主动运动以改进表现的SLAM系统</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#未解问题-4"><span class="toc-number">7.1.</span> <span class="toc-text">未解问题</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#新颖的传感器与学习方法"><span class="toc-number">8.</span> <span class="toc-text">新颖的传感器与学习方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#新型传感器"><span class="toc-number">8.1.</span> <span class="toc-text">新型传感器</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深度学习方法"><span class="toc-number">8.2.</span> <span class="toc-text">深度学习方法</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#未解问题-5"><span class="toc-number">8.2.1.</span> <span class="toc-text">未解问题</span></a></li></ol></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 7
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href="/2019/03/07/Computer Science/Robotics/SLAM/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM.md</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/21</span><a class="archive-post-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">ORB-SLAM2 源码阅读笔记.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/14</span><a class="archive-post-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">ORB-SLAM2 Compiling Problems.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/27</span><a class="archive-post-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/30</span><a class="archive-post-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">vSLAM中的闭环检测方法研究.md</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+        <span class="sidebar-tag-name" data-tags="vSLAM"><span class="iconfont-archer">&#xe606;</span>vSLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Paper Review"><span class="iconfont-archer">&#xe606;</span>Paper Review</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Gaunthan Huang"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</body>
+</html>
+
+

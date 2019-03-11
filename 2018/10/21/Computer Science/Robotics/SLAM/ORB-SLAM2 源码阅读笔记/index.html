@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="Chinese">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Gaunthan Huang">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Gaunthan Huang">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>ORB-SLAM2 源码阅读笔记.md · Gaunthan&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">gaunthan&#39;s blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">ORB-SLAM2 源码阅读笔记.md</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">gaunthan's blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            ORB-SLAM2 源码阅读笔记.md
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">1.6k</span>阅读时长: <span class="post-count reading-time">5 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/10/21</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>Source code: <a href="https://github.com/raulmur/ORB_SLAM2" target="_blank" rel="noopener">ORB_SLAM2</a>.</p>
+</blockquote>
+<h2 id="Data-Structures"><a href="#Data-Structures" class="headerlink" title="Data Structures"></a>Data Structures</h2><h3 id="Frame"><a href="#Frame" class="headerlink" title="Frame"></a>Frame</h3><p>帧区别于单张图像，它结合了相机、特征相关的内容，因此具有内参、特征关键点、特征描述符、视觉词袋向量、地图点以及姿态等数据成员，具备词袋计算、特征提取、姿态换算、投影相关的调用接口。</p>
+<p>对相机返回的图像进行处理后，就可以为其生成对应的帧。</p>
+<h3 id="KeyFrame"><a href="#KeyFrame" class="headerlink" title="KeyFrame"></a>KeyFrame</h3><p>添加到地图中的帧称为关键帧(KeyFrame)，它构建在帧(Frame)的基础上，与地图(Map)关联。关键帧是对建图和定位比较重要的那些帧。</p>
+<h3 id="Map"><a href="#Map" class="headerlink" title="Map"></a>Map</h3><p>地图(Map)表征了机器人感知到的环境，在基于关键帧的SLAM系统中，地图由许多共视的关键帧以及关键点组成。</p>
+<h3 id="Modules"><a href="#Modules" class="headerlink" title="Modules"></a>Modules</h3><h4 id="Tracking"><a href="#Tracking" class="headerlink" title="Tracking"></a>Tracking</h4><p>Tracking利用Motion-only BA为每帧图像求解它的姿态，运行在主线程中。</p>
+<h4 id="LocalMapping"><a href="#LocalMapping" class="headerlink" title="LocalMapping"></a>LocalMapping</h4><p>LocalMapping负责建图，利用Local BA优化关键帧和姿态。</p>
+<h4 id="LoopClosing"><a href="#LoopClosing" class="headerlink" title="LoopClosing"></a>LoopClosing</h4><p>LoopClosing负责闭环的检测、验证和地图修正。最后会启动另一个线程执行Full BA。</p>
+<h2 id="Algorithms"><a href="#Algorithms" class="headerlink" title="Algorithms"></a>Algorithms</h2><h3 id="Overview"><a href="#Overview" class="headerlink" title="Overview"></a>Overview</h3><p><img src="/images/5bcd3c3fab6441449700268a.png" alt></p>
+<h3 id="main-of-example-code"><a href="#main-of-example-code" class="headerlink" title="main() of example code"></a>main() of example code</h3><ol>
+<li>命令行参数检查，加载数据集：<code>LoadImages()</code></li>
+<li>创建SLAM系统：<code>System::SLAM()</code></li>
+<li>以时间先后次序迭代数据集，对每份数据样本<ul>
+<li>如果是单目系统，则读取单张图片进行追踪：<code>System::TrackMonocular()</code></li>
+<li>如果是双目系统，则读取左右目图片进行追踪：<code>System::TrackStereo()</code></li>
+<li>如果是RGB-D系统，则读取RGB图和深度图进行追踪：<code>System::TrackRGBD()</code></li>
+<li>保存每次追踪使用的时间。单次追踪结束后，根据样本采集时间差适当延时：<code>usleep()</code></li>
+</ul>
+</li>
+<li>追踪结束，关闭所有线程：<code>System::Shutdown()</code></li>
+<li>计算追踪统计量，打印统计信息</li>
+<li>保存相机姿态轨迹</li>
+<li>程序返回</li>
+</ol>
+<h3 id="System"><a href="#System" class="headerlink" title="System"></a>System</h3><h4 id="System-SLAM"><a href="#System-SLAM" class="headerlink" title="System::SLAM()"></a>System::SLAM()</h4><ol>
+<li>打开系统配置文件：<code>cv::FileStorage::FileStorage()</code></li>
+<li>加载ORB词典：<code>ORBVocabulary::loadFromTextFile()</code></li>
+<li>创建系统对象：KeyFrameDatabase, Map, Tracking, LocalMapping, LoopClosing</li>
+<li>（可选）创建绘图对象FrameDrawer, MapDrawer, Viewer。将Viewer对象关联到新线程</li>
+<li>将系统对象LocalMapping和LoopClosing关联到新线程</li>
+<li>令系统对象Tracking，LocalMapping和LoopClosing互相保存引用</li>
+</ol>
+<h4 id="System-TrackMonocular-TrackStereo-TrackRGBD"><a href="#System-TrackMonocular-TrackStereo-TrackRGBD" class="headerlink" title="System::TrackMonocular/TrackStereo/TrackRGBD()"></a>System::TrackMonocular/TrackStereo/TrackRGBD()</h4><ol>
+<li>检查系统模式，调整系统功能<ul>
+<li>若定位模式位已激活，则停止LocalMapping线程，启用仅追踪功能：<code>Tracking::InformOnlyTracking(true)</code></li>
+<li>若解活定位模式位已激活，则关闭仅追踪功能<code>Tracking::InformOnlyTracking(false)</code>，恢复LocalMapping线程</li>
+<li>清除标志位</li>
+</ul>
+</li>
+<li>检查系统重置情况。若已设置相关标志位，则重置系统：<code>Tracking::Reset()</code></li>
+<li>进行追踪：<code>Tracking::GrabImageMonocular/GrabImageStereo/GrabImageRGBD()</code></li>
+<li>保存追踪相关信息，用户可通过以下接口访问相关信息<ul>
+<li><code>System::GetTrackingState()</code></li>
+<li><code>System::GetTrackedMapPoints()</code></li>
+<li><code>System::GetTrackedKeyPointsUn()</code></li>
+</ul>
+</li>
+</ol>
+<h3 id="Tracking-1"><a href="#Tracking-1" class="headerlink" title="Tracking"></a>Tracking</h3><h4 id="Tracking-GrabImageMonocular-GrabImageStereo-GrabImageRGBD"><a href="#Tracking-GrabImageMonocular-GrabImageStereo-GrabImageRGBD" class="headerlink" title="Tracking::GrabImageMonocular/GrabImageStereo/GrabImageRGBD()"></a>Tracking::GrabImageMonocular/GrabImageStereo/GrabImageRGBD()</h4><ol>
+<li>将相机采集到的图像转换为灰度图</li>
+<li>利用灰度图、ORB特征提取器和ORB词典构建帧，并将该帧设为当前帧</li>
+<li>调用<code>Tracking::Track()</code>进行追踪</li>
+<li>返回当前帧的姿态</li>
+</ol>
+<h4 id="Tracking-Track"><a href="#Tracking-Track" class="headerlink" title="Tracking::Track()"></a>Tracking::Track()</h4><ol>
+<li>检查追踪状态，如果还没有追踪的图片(NO_IMAGES_YET，为追踪可视化设置)，则设置当前追踪状态为未初始化(NOT_INITIALIZED)</li>
+<li>如果追踪状态为未初始化，则调用<code>Tracking::StereoInitialization()</code>或<code>Tracking::MonocularInitialization()</code>进行初始化。该步将此帧设为关键帧，加入到地图中</li>
+<li>否则，进行追踪（步骤4~8）</li>
+<li>若系统不处于仅定位模式（即LocalMapping已激活），检查追踪状态，若不正常则执行重定位<code>Tracking::Relocalization()</code>。否则，执行<code>Tracking::CheckReplacedInLastFrame()</code>更新可能被LocalMapping修改了的地图点；若运动模型没有姿态或上一时刻执行了重定位，则使用引用关键帧进行追踪<code>Tracking::TrackReferenceKeyFrame()</code>，不然就先用运动模型追踪<code>Tracking::TrackWithMotionModel()</code></li>
+<li>若系统处于仅定位模式，同样先检查追踪状态。若不正常，执行重定位。否则，若不处于VO（视觉里程计）状态，则在运动模型有数据的情况下利用运动模型追踪，不然用引用关键帧追踪。若处于VO状态，则利用重定位计算姿态，若重定位失败了，则利用运动模型计算姿态</li>
+<li>若追踪正常，不处于仅追踪模式或虽处于追踪模式但VO没有激活，则调用<code>Tracking::TrackLocalMap()</code>追踪局部地图</li>
+<li>若追踪不成功，更新追踪状态为丢失。否则，更新追踪状态为正常，然后判断上一帧姿态是否为空，若非空则将运动模型设为上一帧与当前帧的帧间变换姿态，不然将运动模型设为空。接着检查是否需要插入新的关键帧<code>Tracking::NeedNewKeyFrame()</code>，若需要则插入<code>Tracking::CreateNewKeyFrame()</code></li>
+<li>若追踪状态为丢失，且地图中的关键帧过少，则重置系统：<code>System::Reset()</code>，算法返回</li>
+<li>若当前帧姿态不为空，则将该帧的信息保存起来，不然保存引用帧的相关信息</li>
+</ol>
+<h4 id="Tracking-TrackLocalMap"><a href="#Tracking-TrackLocalMap" class="headerlink" title="Tracking::TrackLocalMap()"></a>Tracking::TrackLocalMap()</h4><p><img src="/images/5bf0f553ab64413ea8002108.png" alt></p>
+<h4 id="Tracking-Relocalization"><a href="#Tracking-Relocalization" class="headerlink" title="Tracking::Relocalization()"></a>Tracking::Relocalization()</h4><ol>
+<li>计算当前帧的BoW向量：<code>Frame::ComputeBow()</code></li>
+<li>查询关键帧数据库，获取候选关键帧：<code>KeyFrameDatabase::DetectRelocalizationCandidates()</code>。若无候选者，算法返回失败</li>
+<li>遍历候选关键帧，将好的关键帧与当前帧进行BoW匹配：<code>ORBmatcher::SearchByBow()</code></li>
+<li>如果当前帧与该关键帧的配对数满足要求($\geq 15$)，则构建当前帧与配对关键帧的PnP问题：<code>PnPsolver::PnPsolver()</code></li>
+<li>迭代所有PnP问题，若其中某个PnP问题<ul>
+<li>5 RANSAC操作<code>PnPsolver::iterate()</code>不满足最小内点要求（关键点数小于设置的RANSAC最小内点数，或RANSAC迭代次数多于设置的RANSAC最大迭代次数），则将它丢弃</li>
+<li>满足最小内点要求，但不能算出姿态，则将它丢弃</li>
+<li>满足以上两个条件，将当前帧的姿态设为所求解的姿态，进行姿态优化：<code>Optimizer::PoseOptimization()</code></li>
+<li>若优化后没有足够多的内点，则使用更大或更小的投影搜索窗口生成额外的内点<code>ORBmatcher::SearchByProjection()</code>，并再次进行姿态优化，计算内点的数量</li>
+<li>若内点数量足够多，迭代提前结束</li>
+</ul>
+</li>
+<li>若所有PnP求解都不符合条件，算法返回失败</li>
+<li>否则，保存当前帧索引为上一个重定位帧的索引，重定位结束，算法返回成功</li>
+</ol>
+<h4 id="Tracking-NeedNewKeyFrame"><a href="#Tracking-NeedNewKeyFrame" class="headerlink" title="Tracking::NeedNewKeyFrame()"></a>Tracking::NeedNewKeyFrame()</h4><p><img src="/images/5bf106e0ab64413cbb002581.png" alt></p>
+<h4 id="Tracking-CreateNewKeyFrame"><a href="#Tracking-CreateNewKeyFrame" class="headerlink" title="Tracking::CreateNewKeyFrame()"></a>Tracking::CreateNewKeyFrame()</h4><p><img src="/images/5bf1000aab64413cbb0023c4.png" alt></p>
+<h3 id="LocalMapping-1"><a href="#LocalMapping-1" class="headerlink" title="LocalMapping"></a>LocalMapping</h3><h4 id="LocalMapping-Run"><a href="#LocalMapping-Run" class="headerlink" title="LocalMapping::Run()"></a>LocalMapping::Run()</h4><p><img src="/images/5bf10eb6ab64413cbb002778.png" alt></p>
+<h3 id="LoopClosing-1"><a href="#LoopClosing-1" class="headerlink" title="LoopClosing"></a>LoopClosing</h3><h4 id="LoopClosing-Run"><a href="#LoopClosing-Run" class="headerlink" title="LoopClosing::Run()"></a>LoopClosing::Run()</h4><p><img src="/images/5bf109f3ab64413ea8002605.png" alt></p>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="http://gaunthan.leanote.com">Gaunthan Huang</a>
+            </p><p>原文链接：<a href="http://gaunthan.leanote.com/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">http://gaunthan.leanote.com/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/</a>
+            </p><p>发表日期：<a href="http://gaunthan.leanote.com/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">October 21st 2018, 1:14:18 am</a>
+            </p><p>更新日期：<a href="http://gaunthan.leanote.com/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">March 11th 2019, 2:46:38 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/" title="ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md">
+                    <div class="nextTitle">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/" title="ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md">
+                    <div class="prevTitle">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:gaunthanhuang at foxmail dot com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/gaunthan" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Structures"><span class="toc-number">1.</span> <span class="toc-text">Data Structures</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Frame"><span class="toc-number">1.1.</span> <span class="toc-text">Frame</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#KeyFrame"><span class="toc-number">1.2.</span> <span class="toc-text">KeyFrame</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Map"><span class="toc-number">1.3.</span> <span class="toc-text">Map</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Modules"><span class="toc-number">1.4.</span> <span class="toc-text">Modules</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking"><span class="toc-number">1.4.1.</span> <span class="toc-text">Tracking</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LocalMapping"><span class="toc-number">1.4.2.</span> <span class="toc-text">LocalMapping</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#LoopClosing"><span class="toc-number">1.4.3.</span> <span class="toc-text">LoopClosing</span></a></li></ol></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Algorithms"><span class="toc-number">2.</span> <span class="toc-text">Algorithms</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Overview"><span class="toc-number">2.1.</span> <span class="toc-text">Overview</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#main-of-example-code"><span class="toc-number">2.2.</span> <span class="toc-text">main() of example code</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#System"><span class="toc-number">2.3.</span> <span class="toc-text">System</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#System-SLAM"><span class="toc-number">2.3.1.</span> <span class="toc-text">System::SLAM()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#System-TrackMonocular-TrackStereo-TrackRGBD"><span class="toc-number">2.3.2.</span> <span class="toc-text">System::TrackMonocular/TrackStereo/TrackRGBD()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Tracking-1"><span class="toc-number">2.4.</span> <span class="toc-text">Tracking</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-GrabImageMonocular-GrabImageStereo-GrabImageRGBD"><span class="toc-number">2.4.1.</span> <span class="toc-text">Tracking::GrabImageMonocular/GrabImageStereo/GrabImageRGBD()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-Track"><span class="toc-number">2.4.2.</span> <span class="toc-text">Tracking::Track()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-TrackLocalMap"><span class="toc-number">2.4.3.</span> <span class="toc-text">Tracking::TrackLocalMap()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-Relocalization"><span class="toc-number">2.4.4.</span> <span class="toc-text">Tracking::Relocalization()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-NeedNewKeyFrame"><span class="toc-number">2.4.5.</span> <span class="toc-text">Tracking::NeedNewKeyFrame()</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Tracking-CreateNewKeyFrame"><span class="toc-number">2.4.6.</span> <span class="toc-text">Tracking::CreateNewKeyFrame()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LocalMapping-1"><span class="toc-number">2.5.</span> <span class="toc-text">LocalMapping</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#LocalMapping-Run"><span class="toc-number">2.5.1.</span> <span class="toc-text">LocalMapping::Run()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#LoopClosing-1"><span class="toc-number">2.6.</span> <span class="toc-text">LoopClosing</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#LoopClosing-Run"><span class="toc-number">2.6.1.</span> <span class="toc-text">LoopClosing::Run()</span></a></li></ol></li></ol></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 7
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href="/2019/03/07/Computer Science/Robotics/SLAM/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM.md</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/21</span><a class="archive-post-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">ORB-SLAM2 源码阅读笔记.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/14</span><a class="archive-post-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">ORB-SLAM2 Compiling Problems.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/27</span><a class="archive-post-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/30</span><a class="archive-post-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">vSLAM中的闭环检测方法研究.md</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+        <span class="sidebar-tag-name" data-tags="vSLAM"><span class="iconfont-archer">&#xe606;</span>vSLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Paper Review"><span class="iconfont-archer">&#xe606;</span>Paper Review</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Gaunthan Huang"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</body>
+</html>
+
+

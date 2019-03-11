@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="Chinese">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Gaunthan Huang">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Gaunthan Huang">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>vSLAM中的闭环检测方法研究.md · Gaunthan&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">gaunthan&#39;s blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">vSLAM中的闭环检测方法研究.md</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">gaunthan's blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            vSLAM中的闭环检测方法研究.md
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">3k</span>阅读时长: <span class="post-count reading-time">10 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/06/30</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>闭环检测(Loop Closure Detection)，主要解决位姿估计随时间漂移的问题。闭环检测是大尺度环境中SLAM应用的关键环节，是消除SLAM定位和构图中累积误差的重要手段。</p>
+<p>为了实现闭环检测，机器人需要能够识别出曾经到达过的场景。可以在场景中布置标识物（如二维码），机器人只要看到/扫描到相应的标识，就知道自己当前的位置。但是这种方法限制了应用环境，同时部署这类器件会带来额外的工程成本。实际上，让机器人使用自身携带的传感器——摄像头，来完成这一任务更加符合现实需求。由此，闭环检测就转化成了判断场景相似性的问题。</p>
+<p>基于视觉的闭环检测可以分为三类：</p>
+<ul>
+<li>Map-to-map。比对内容为两张局部地图的外观和位置。</li>
+<li>Image-to-image。比对内容为当前图像帧和先前见过的图像帧。</li>
+<li>Image-to-map。比对内容为当前图像帧和地图中的特征。</li>
+</ul>
+<p>基于视觉外观（即Image-to-image方法）的闭环检测方法方法将当前帧的图像与历史帧进行比较，从中选出最佳匹配，得到闭环区域。整个过程可以分为两个部分：图像描述和相似性度量。图像描述可以将一幅图像压缩成一维的向量，称之为图像的特征向量。特征向量比原图像更抽象、表征能力更强。图像描述在闭环检测中尤为重要，直接决定图像匹配的准确与否。</p>
+<p>如果找到闭环帧时还拥有它对应的几何信息（位姿），那就可以利用该信息修正闭环上估计的所有位姿。Image-to-image方法不使用度量地图，因此无法执行这样的操作。但我们可以将它与Image-to-map方法结合，即在Image-to-image的基础上，记录关键图像帧的位姿信息。ORB-SLAM中用的就是这种方法——地图由关键帧和特征点组成，利用特征匹配寻找闭环候选帧（Image-to-image方法），利用候选帧和当前帧的匹配特征的几何信息进行位姿修正。由于知道候选帧在地图中的位置，因此能利用几何信息去除高度相似的伪候选帧。</p>
+<h2 id="基于视觉词袋模型的闭环检测方法"><a href="#基于视觉词袋模型的闭环检测方法" class="headerlink" title="基于视觉词袋模型的闭环检测方法"></a>基于视觉词袋模型的闭环检测方法</h2><h3 id="简介"><a href="#简介" class="headerlink" title="简介"></a>简介</h3><p>在目前实际的vSLAM应用中，闭环检测中的图像描述方法多采用词袋模型(Bag of Words, BoW)。词袋模型是信息检索领域常用的文档表示方法。在信息检索中，词袋模型假定对于一个文档，忽略它的单词顺序和语法、句法等要素，将其仅仅看作是若干个词汇的集合，文档中每个单词的出现都是独立的，不依赖于其它单词是否出现。也就是说，文档中任意一个位置出现的任何单词，都不受该文档语意影响而独立选择的。</p>
+<h3 id="视觉词袋模型"><a href="#视觉词袋模型" class="headerlink" title="视觉词袋模型"></a>视觉词袋模型</h3><p>将词袋模型应用于图像表示，如对人脸进行表示，则可以看成是多个人体器官的集合。如下图所示：</p>
+<p><img src="/images/5b3733e1ab64410bbf001212.png" alt></p>
+<p>通过观察会发现，同一类目标的不同实例之间虽然存在差异，但我们仍然可以找到它们之间的一些共同的地方，比如说人脸，虽然说不同人的脸差别比较大，但眼睛，嘴，鼻子等一些比较细小的部位，却观察不到太大差别，我们可以把这些不同实例之间共同的部位提取出来，作为识别这一类目标的视觉词汇。由于图像中的词汇不像文本文档中的那样是现成的，我们需要首先从图像中提取出相互独立的视觉词汇，这通常需要经过三个步骤：</p>
+<ol>
+<li>特征检测：利用SIFT、FAST等特征子描述方法从不同类别的图像中提取视觉词汇向量，这些向量代表的是图像中局部不变的特征点。</li>
+<li>视觉词典生成：利用聚类算法（如k-means）将所有特征点进行聚类，构造一个包含K个词汇的单词表。</li>
+<li>特征表示：统计单词表中每个单词在图像中出现的次数，从而将图像表示成一个K维的数值向量。</li>
+</ol>
+<p>虽然简单地对特征进行一次聚类执行速度会很快，但结果会缺乏对视觉特征细致的分类，因此上述生成视觉词典的第二步会更加复杂。一种改进是使用聚类算法将特征空间划分为K类后，对划分的每个子空间，继续使用聚类算法进行划分，最终生成一棵K-叉树，每个叶结点是一个视觉词汇。这棵树称为视觉词典树，结构如下图所示：</p>
+<p><img src="/images/5b38bf2fab644167c7000f90.png" alt></p>
+<p>这种方法能够有效提高视觉单词的数量，同时额外维护的顺序索引与逆序索引提高了图像的匹配效率。流行的DBoW程序库便是使用了这种方法与结构。</p>
+<p>顺序索引存储了图像特征和它们关联的结点，能有效地获取图像间的特征匹配点对，加快图像确认中的几何特征检验。逆序索引则存储了每张图像中视觉单词的权重，可以快速提取与给定图像相似的图像。对于新捕获的图像帧，将其中每个特征点都从单词树根节点往下遍历，取汉明距离最小的节点接着往下遍历直到叶节点。最终计算各个叶节点上的数目并形成图像的特征向量，同时得到图像的逆序索引和顺序索引，以便用于之后的闭环检测。</p>
+<h2 id="基于深度学习模型的闭环检测方法"><a href="#基于深度学习模型的闭环检测方法" class="headerlink" title="基于深度学习模型的闭环检测方法"></a>基于深度学习模型的闭环检测方法</h2><h3 id="简介-1"><a href="#简介-1" class="headerlink" title="简介"></a>简介</h3><p>传统的图像描述方法都是使用手工设计的特征。虽然它们对于场景中视角变化有较强的鲁棒性，却对外观变化（如场景光照、季节或者天气发生变化）十分敏感。视觉词袋模型中采用的特征检测方法便使用了手工设计的特征，因此当场景外观变化明显时，词袋模型会使地图上相同位置呈现不同的特征，造成漏匹配；此外，当场景中包含大量分散、重复的物体时，比如房间内有许多椅子和桌子，那么词袋模型会使大量的图像包含类似的单词，导致在地图上不同的位置呈现相似的特征，造成误匹配。</p>
+<p>基于深度学习的闭环检测方法利用卷积神经网络等深度学习模型进行图像描述，使得闭环检测算法不易受环境中外观变化的影响。然而，常规的深度学习模型体积往往比较大、运行速度缓慢，很难满足闭环检测高实时性的要求。所幸，可以通过设计结构更加巧妙和精简的卷积神经网络达成同样的功能。</p>
+<h3 id="模型结构"><a href="#模型结构" class="headerlink" title="模型结构"></a>模型结构</h3><p>《面向物体级vSLAM的闭环检测及定位方法研究》一文中提出了一种精简、快速的卷积神经网络，FLCNN。该网络模型图如下：</p>
+<p><img src="/images/5b38e011ab644167c7001305.png" alt></p>
+<p>FLCNN的输入是大小为128x128的灰度图像，在FLCNN中所有的卷积层和全连接层后均通过BN进行归一化操作，非线性映射函数均采用线性修正单元(ReLU)。为了减少网络的参数量和提高网络的运行速度，在前两个卷积层中使用了C.ReLU模块设计,2个池化层均采用了最大池化(Max Pooling)以减少特征图的大小，增加神经元的感受野并且提高网络模型的鲁棒性。</p>
+<p>网络中的卷积块设计吸取了众多优秀深度学习论文的思想，使用了ReLU激活函数、批量规范化、跳跃连接、1x1卷积核。一个卷积块由两个子块组成，这两个子块的结构如下所示：</p>
+<p><img src="/images/5b38e011ab644167c7001304.png" alt></p>
+<p>虽然FLCNN有24层网络层，但相比于只有8层的PlaceCNN，它的参数量只有后者的七分之一，大约为8M。相比于PlaceCNN，FLCNN网络结构更精简，参数量更少，运算速度更快。</p>
+<h3 id="训练方法"><a href="#训练方法" class="headerlink" title="训练方法"></a>训练方法</h3><p>FLCNN使用MIT公布的Place365数据集完成网络的训练。为了解决数据集固有的类别不均衡问题，使用了以类别为导向的数据采样方法。论文还对图像进行镜像以扩大数据集，网络的初始化采用Xavier方法，模型损失使用交叉熵函数进行度量。</p>
+<h3 id="深度学习与闭环检测算法"><a href="#深度学习与闭环检测算法" class="headerlink" title="深度学习与闭环检测算法"></a>深度学习与闭环检测算法</h3><p>由于CNN模型具有强大的迁移能力，可以将训练好的FLCNN当做图像特征提取器，通过FLCNN提取场景语义特征，并将其应用于闭环检测。</p>
+<p>闭环检测处理的数据大多是连续的视频帧，相邻图像帧有很强的相关性，它们的相似度往往很高。如果直接进行闭环检测，相邻图像帧很容易被误检测为闭环。因此在判定闭环区域的过程中，需要划定图像相似度的比较范围。</p>
+<p>基于FLCNN的闭环检测算法流程如下图所示：</p>
+<p><img src="/images/5b38e011ab644167c7001306.png" alt></p>
+<p>具体而言，设置P为当前需要判断的图像帧，Q为与第P帧相邻帧的数目。则寻找第P帧的闭环区域时，需要比较的范围应该为第1帧到第P-Q帧。对于采集到的第P帧图像，首先对其采用减均值和灰度化的预处理并调整其大小为128×128，然后将处理后的图像输入到训练好的FLCNN模型中，抽取FLCNN中Fc6的数据作为第P帧图像的特征向量($Vector_p$)，随后将$Vector_p$进行L2归一化，公式如下：</p>
+<p><img src="/images/5b38e011ab644167c7001303.png" alt></p>
+<p>其中$(x_1,…,x_d)$为$Vector_p$,维度为d。最后将归一化后的$Vector_p$与历史帧的特征向量$(Vector_{1,2…P-Q})$计算相似度，若相似度超过设定的阈值，则找到第p帧图像的闭环区域。</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>基于视觉词袋模型的闭环检测算法对环境中视角变化有较强的鲁棒性，但容易受光照、季节等外观变化的影响。基于深度学习模型的闭环检测算法虽然不易受环境中外观变化的影响，但由于对整张图片进行特征提取，容易受到视角变化的影响。此外，这些方法在场景中包含移动的物体时表现不是很好。进一步的研究思路是借助更多的计算机视觉技术，辨别图像中的物体，剔除不佳的特征，使得闭环检测的精度更高。</p>
+<h2 id="参考文献"><a href="#参考文献" class="headerlink" title="参考文献"></a>参考文献</h2><ul>
+<li><a href="http://www.cnblogs.com/zjiaxing/p/5548265.html" target="_blank" rel="noopener">视觉 SLAM 之词袋（bag of words） 模型与 K-means 聚类算法浅析（1）</a></li>
+<li>视觉SLAM十四讲——从理论到实践，高翔</li>
+<li>梁志伟, 陈燕燕, 朱松豪, 等. 基于视觉词典的单目视觉闭环检测算法 [J]. 模式识别与人工智能, 2013, 26(6):561-570.</li>
+<li><a href="http://paopaorobot.org/2017/05/03/dbow3-%E8%A7%86%E8%A7%89%E8%AF%8D%E8%A2%8B%E6%A8%A1%E5%9E%8B%E3%80%81%E8%A7%86%E8%A7%89%E5%AD%97%E5%85%B8%E5%92%8C%E5%9B%BE%E5%83%8F%E6%95%B0%E6%8D%AE%E5%BA%93%E5%88%86%E6%9E%90/" target="_blank" rel="noopener">DBOW3 视觉词袋模型、视觉字典和图像数据库分析</a></li>
+<li>A comparison of loop closing techniques in monocular SLAM. Robotics and Autonomous Systems, 57(12), 1188-1197. </li>
+<li>面向物体级vSLAM的闭环检测及定位方法研究，陈佳腾</li>
+</ul>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="http://gaunthan.leanote.com">Gaunthan Huang</a>
+            </p><p>原文链接：<a href="http://gaunthan.leanote.com/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">http://gaunthan.leanote.com/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/</a>
+            </p><p>发表日期：<a href="http://gaunthan.leanote.com/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">June 30th 2018, 6:54:29 am</a>
+            </p><p>更新日期：<a href="http://gaunthan.leanote.com/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">March 11th 2019, 2:46:41 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/" title="Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md">
+                    <div class="nextTitle">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:gaunthanhuang at foxmail dot com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/gaunthan" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#概述"><span class="toc-number">1.</span> <span class="toc-text">概述</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基于视觉词袋模型的闭环检测方法"><span class="toc-number">2.</span> <span class="toc-text">基于视觉词袋模型的闭环检测方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#简介"><span class="toc-number">2.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#视觉词袋模型"><span class="toc-number">2.2.</span> <span class="toc-text">视觉词袋模型</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#基于深度学习模型的闭环检测方法"><span class="toc-number">3.</span> <span class="toc-text">基于深度学习模型的闭环检测方法</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#简介-1"><span class="toc-number">3.1.</span> <span class="toc-text">简介</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#模型结构"><span class="toc-number">3.2.</span> <span class="toc-text">模型结构</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#训练方法"><span class="toc-number">3.3.</span> <span class="toc-text">训练方法</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#深度学习与闭环检测算法"><span class="toc-number">3.4.</span> <span class="toc-text">深度学习与闭环检测算法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#总结"><span class="toc-number">4.</span> <span class="toc-text">总结</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#参考文献"><span class="toc-number">5.</span> <span class="toc-text">参考文献</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 7
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href="/2019/03/07/Computer Science/Robotics/SLAM/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM.md</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/21</span><a class="archive-post-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">ORB-SLAM2 源码阅读笔记.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/14</span><a class="archive-post-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">ORB-SLAM2 Compiling Problems.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/27</span><a class="archive-post-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/30</span><a class="archive-post-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">vSLAM中的闭环检测方法研究.md</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+        <span class="sidebar-tag-name" data-tags="vSLAM"><span class="iconfont-archer">&#xe606;</span>vSLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Paper Review"><span class="iconfont-archer">&#xe606;</span>Paper Review</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Gaunthan Huang"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</body>
+</html>
+
+

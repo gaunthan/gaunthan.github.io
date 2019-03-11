@@ -1,0 +1,854 @@
+<!DOCTYPE html>
+<html lang="Chinese">
+    <!-- title -->
+
+
+
+
+<!-- keywords -->
+
+
+
+
+<head><meta name="generator" content="Hexo 3.8.0">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <meta name="author" content="Gaunthan Huang">
+    <meta name="renderer" content="webkit">
+    <meta name="copyright" content="Gaunthan Huang">
+    
+    <meta name="keywords" content="hexo,hexo-theme,hexo-blog">
+    
+    <meta name="description" content>
+    <meta http-equiv="Cache-control" content="no-cache">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <title>ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md · Gaunthan&#39;s Studio</title>
+    <style type="text/css">
+    @font-face {
+        font-family: 'Oswald-Regular';
+        src: url("/font/Oswald-Regular.ttf");
+    }
+
+    body {
+        margin: 0;
+    }
+
+    header,
+    footer,
+    .back-top,
+    .sidebar,
+    .container,
+    .site-intro-meta,
+    .toc-wrapper {
+        display: none;
+    }
+
+    .site-intro {
+        position: relative;
+        z-index: 3;
+        width: 100%;
+        /* height: 50vh; */
+        overflow: hidden;
+    }
+
+    .site-intro-placeholder {
+        position: absolute;
+        z-index: -2;
+        top: 0;
+        left: 0;
+        width: calc(100% + 300px);
+        height: 100%;
+        background: repeating-linear-gradient(-45deg, #444 0, #444 80px, #333 80px, #333 160px);
+        background-position: center center;
+        transform: translate3d(-226px, 0, 0);
+        animation: gradient-move 2.5s ease-out 0s infinite;
+    }
+
+    @keyframes gradient-move {
+        0% {
+            transform: translate3d(-226px, 0, 0);
+        }
+        100% {
+            transform: translate3d(0, 0, 0);
+        }
+    }
+
+</style>
+
+    <link rel="preload" href="/css/style.css?v=20180824" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <link rel="stylesheet" href="/css/mobile.css?v=20180824" media="(max-width: 980px)">
+    
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+    <!-- /*! loadCSS. [c]2017 Filament Group, Inc. MIT License */
+/* This file is meant as a standalone workflow for
+- testing support for link[rel=preload]
+- enabling async CSS loading in browsers that do not support rel=preload
+- applying rel preload css once loaded, whether supported or not.
+*/ -->
+<script>
+(function( w ){
+	"use strict";
+	// rel=preload support test
+	if( !w.loadCSS ){
+		w.loadCSS = function(){};
+	}
+	// define on the loadCSS obj
+	var rp = loadCSS.relpreload = {};
+	// rel=preload feature support test
+	// runs once and returns a function for compat purposes
+	rp.support = (function(){
+		var ret;
+		try {
+			ret = w.document.createElement( "link" ).relList.supports( "preload" );
+		} catch (e) {
+			ret = false;
+		}
+		return function(){
+			return ret;
+		};
+	})();
+
+	// if preload isn't supported, get an asynchronous load by using a non-matching media attribute
+	// then change that media back to its intended value on load
+	rp.bindMediaToggle = function( link ){
+		// remember existing media attr for ultimate state, or default to 'all'
+		var finalMedia = link.media || "all";
+
+		function enableStylesheet(){
+			link.media = finalMedia;
+		}
+
+		// bind load handlers to enable media
+		if( link.addEventListener ){
+			link.addEventListener( "load", enableStylesheet );
+		} else if( link.attachEvent ){
+			link.attachEvent( "onload", enableStylesheet );
+		}
+
+		// Set rel and non-applicable media type to start an async request
+		// note: timeout allows this to happen async to let rendering continue in IE
+		setTimeout(function(){
+			link.rel = "stylesheet";
+			link.media = "only x";
+		});
+		// also enable media after 3 seconds,
+		// which will catch very old browsers (android 2.x, old firefox) that don't support onload on link
+		setTimeout( enableStylesheet, 3000 );
+	};
+
+	// loop through link elements in DOM
+	rp.poly = function(){
+		// double check this to prevent external calls from running
+		if( rp.support() ){
+			return;
+		}
+		var links = w.document.getElementsByTagName( "link" );
+		for( var i = 0; i < links.length; i++ ){
+			var link = links[ i ];
+			// qualify links to those with rel=preload and as=style attrs
+			if( link.rel === "preload" && link.getAttribute( "as" ) === "style" && !link.getAttribute( "data-loadcss" ) ){
+				// prevent rerunning on link
+				link.setAttribute( "data-loadcss", true );
+				// bind listeners to toggle media back
+				rp.bindMediaToggle( link );
+			}
+		}
+	};
+
+	// if unsupported, run the polyfill
+	if( !rp.support() ){
+		// run once at least
+		rp.poly();
+
+		// rerun poly on an interval until onload
+		var run = w.setInterval( rp.poly, 500 );
+		if( w.addEventListener ){
+			w.addEventListener( "load", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		} else if( w.attachEvent ){
+			w.attachEvent( "onload", function(){
+				rp.poly();
+				w.clearInterval( run );
+			} );
+		}
+	}
+
+
+	// commonjs
+	if( typeof exports !== "undefined" ){
+		exports.loadCSS = loadCSS;
+	}
+	else {
+		w.loadCSS = loadCSS;
+	}
+}( typeof global !== "undefined" ? global : this ) );
+</script>
+
+    <link rel="icon" href="/assets/favicon.ico">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js" as="script">
+    <link rel="preload" href="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js" as="script">
+    <link rel="preload" href="/scripts/main.js" as="script">
+    <link rel="preload" as="font" href="/font/Oswald-Regular.ttf" crossorigin>
+    <link rel="preload" as="font" href="https://at.alicdn.com/t/font_327081_1dta1rlogw17zaor.woff" crossorigin>
+    
+    <!-- fancybox -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/fancybox/3.2.5/jquery.fancybox.min.js" defer></script>
+    <!-- 百度统计  -->
+    
+    <!-- 谷歌统计  -->
+    
+</head>
+
+    
+        <body class="post-body">
+    
+    
+<header class="header">
+
+    <div class="read-progress"></div>
+    <div class="header-sidebar-menu">&#xe775;</div>
+    <!-- post页的toggle banner  -->
+    
+    <div class="banner">
+            <div class="blog-title">
+                <a href="/">gaunthan&#39;s blog</a>
+            </div>
+            <div class="post-title">
+                <a href="#" class="post-name">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+            </div>
+    </div>
+    
+    <a class="home-link" href="/">gaunthan's blog</a>
+</header>
+    <div class="wrapper">
+        <div class="site-intro" style="
+
+
+
+
+
+
+
+height:50vh;
+">
+    
+    <!-- 主页  -->
+    
+    
+    <!-- 404页  -->
+            
+    <div class="site-intro-placeholder"></div>
+    <div class="site-intro-img" style="background-image: url(/intro/post-bg.jpg)"></div>
+    <div class="site-intro-meta">
+        <!-- 标题  -->
+        <h1 class="intro-title">
+            <!-- 主页  -->
+            
+            ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras...
+            <!-- 404 -->
+            
+        </h1>
+        <!-- 副标题 -->
+        <p class="intro-subtitle">
+            <!-- 主页副标题  -->
+            
+            
+            <!-- 404 -->
+            
+        </p>
+        <!-- 文章页meta -->
+        
+            <div class="post-intros">
+                <!-- 文章页标签  -->
+                
+                    <div class="post-intro-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="vSLAM">vSLAM</a>
+    
+</div>
+                
+                
+                    <div class="post-intro-read">
+                        <span>字数统计: <span class="post-count word-count">3.3k</span>阅读时长: <span class="post-count reading-time">12 min</span></span>
+                    </div>
+                
+                <div class="post-intro-meta">
+                    <span class="post-intro-calander iconfont-archer">&#xe676;</span>
+                    <span class="post-intro-time">2018/10/16</span>
+                    
+                    <span id="busuanzi_container_page_pv" class="busuanzi-pv">
+                        <span class="iconfont-archer">&#xe602;</span>
+                        <span id="busuanzi_value_page_pv"></span>
+                    </span>
+                    
+                    <span class="shareWrapper">
+                        <span class="iconfont-archer shareIcon">&#xe71d;</span>
+                        <span class="shareText">Share</span>
+                        <ul class="shareList">
+                            <li class="iconfont-archer share-qr" data-type="qr">&#xe75b;
+                                <div class="share-qrcode"></div>
+                            </li>
+                            <li class="iconfont-archer" data-type="weibo">&#xe619;</li>
+                            <li class="iconfont-archer" data-type="qzone">&#xe62e;</li>
+                            <li class="iconfont-archer" data-type="twitter">&#xe634;</li>
+                            <li class="iconfont-archer" data-type="facebook">&#xe67a;</li>
+                        </ul>
+                    </span>
+                </div>
+            </div>
+        
+    </div>
+</div>
+        <script>
+ 
+  // get user agent
+  var browser = {
+    versions: function () {
+      var u = window.navigator.userAgent;
+      return {
+        userAgent: u,
+        trident: u.indexOf('Trident') > -1, //IE内核
+        presto: u.indexOf('Presto') > -1, //opera内核
+        webKit: u.indexOf('AppleWebKit') > -1, //苹果、谷歌内核
+        gecko: u.indexOf('Gecko') > -1 && u.indexOf('KHTML') == -1, //火狐内核
+        mobile: !!u.match(/AppleWebKit.*Mobile.*/), //是否为移动终端
+        ios: !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/), //ios终端
+        android: u.indexOf('Android') > -1 || u.indexOf('Linux') > -1, //android终端或者uc浏览器
+        iPhone: u.indexOf('iPhone') > -1 || u.indexOf('Mac') > -1, //是否为iPhone或者安卓QQ浏览器
+        iPad: u.indexOf('iPad') > -1, //是否为iPad
+        webApp: u.indexOf('Safari') == -1, //是否为web应用程序，没有头部与底部
+        weixin: u.indexOf('MicroMessenger') == -1, //是否为微信浏览器
+        uc: u.indexOf('UCBrowser') > -1 //是否为android下的UC浏览器
+      };
+    }()
+  }
+  console.log("userAgent:" + browser.versions.userAgent);
+
+  // callback
+  function fontLoaded() {
+    console.log('font loaded');
+    if (document.getElementsByClassName('site-intro-meta')) {
+      document.getElementsByClassName('intro-title')[0].classList.add('intro-fade-in');
+      document.getElementsByClassName('intro-subtitle')[0].classList.add('intro-fade-in');
+      var postIntros = document.getElementsByClassName('post-intros')[0]
+      if (postIntros) {
+        postIntros.classList.add('post-fade-in');
+      }
+    }
+  }
+
+  // UC不支持跨域，所以直接显示
+  function asyncCb(){
+    if (browser.versions.uc) {
+      console.log("UCBrowser");
+      fontLoaded();
+    } else {
+      WebFont.load({
+        custom: {
+          families: ['Oswald-Regular']
+        },
+        loading: function () {  //所有字体开始加载
+          // console.log('loading');
+        },
+        active: function () {  //所有字体已渲染
+          fontLoaded();
+        },
+        inactive: function () { //字体预加载失败，无效字体或浏览器不支持加载
+          console.log('inactive: timeout');
+          fontLoaded();
+        },
+        timeout: 5000 // Set the timeout to two seconds
+      });
+    }
+  }
+
+  function asyncErr(){
+    console.warn('script load from CDN failed, will load local script')
+  }
+
+  // load webfont-loader async, and add callback function
+  function async(u, cb, err) {
+    var d = document, t = 'script',
+      o = d.createElement(t),
+      s = d.getElementsByTagName(t)[0];
+    o.src = u;
+    if (cb) { o.addEventListener('load', function (e) { cb(null, e); }, false); }
+    if (err) { o.addEventListener('error', function (e) { err(null, e); }, false); }
+    s.parentNode.insertBefore(o, s);
+  }
+
+  var asyncLoadWithFallBack = function(arr, success, reject) {
+      var currReject = function(){
+        reject()
+        arr.shift()
+        if(arr.length)
+          async(arr[0], success, currReject)
+        }
+
+      async(arr[0], success, currReject)
+  }
+
+  asyncLoadWithFallBack([
+    "https://cdn.jsdelivr.net/npm/webfontloader@1.6.28/webfontloader.min.js", 
+    "https://cdn.bootcss.com/webfont/1.6.28/webfontloader.js",
+    "/lib/webfontloader.min.js"
+  ], asyncCb, asyncErr)
+</script>        
+        <img class="loading" src="/assets/loading.svg" style="display: block; margin: 6rem auto 0 auto; width: 6rem; height: 6rem;" />
+        <div class="container container-unloaded">
+            <main class="main post-page">
+    <article class="article-entry">
+        <blockquote>
+<p>Mur-Artal, Raul, and Juan D. Tardós. “Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cameras.” IEEE Transactions on Robotics 33.5 (2017): 1255-1262.</p>
+</blockquote>
+<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>ORB-SLAM2是ORB-SLAM的第二代版本，在一代的基础上，添加了对双目相机、RGB-D相机的支持。第一代的ORB-SLAM基于单目相机。</p>
+<p>视觉SLAM可使用的传感器有许多种：单目相机、双目相机、RGB-D相机等。单目相机是最低成本和最小型的传感器配置。<strong>然而，由于单个相机无法获取深度信息，通过单目构建的地图的尺度是未知的。此外，单目SLAM系统在启动时需要多视角信息或滤波技术以执行地图初始化操作，固定地图的尺度。最后，单目SLAM会遇到尺度漂移(scale drift)，而且在相机只有旋转运动时可能会失败。</strong></p>
+<p>由于单目SLAM固有的这些缺陷，ORB-SLAM2将重心放在了双目相机和RGB-D相机上。特别地，它通过将RGB-D采集的深度信息转换为虚拟的右目相机的坐标信息，使得RGB-D数据可以转换为双目数据，进而使用双目SLAM的方法进行问题求解。</p>
+<h2 id="Related-work"><a href="#Related-work" class="headerlink" title="Related work"></a>Related work</h2><p>ORB-SLAM2并不是第一个基于视觉的SLAM系统，在此之前已经有许多相关的研究，并取得了一定的成果。</p>
+<h3 id="Stereo-SLAM"><a href="#Stereo-SLAM" class="headerlink" title="Stereo SLAM"></a>Stereo SLAM</h3><p>论文<sup><a href="#fn_1" id="reffn_1">1</a></sup>提出了一个早期表现比较突出的双目SLAM系统，它是第一个探索<strong>近点和远点</strong>(close and far points)的双目系统。<strong>如果点的深度小于双目基准线$b$的40倍，则被认为是近点，否则为远点。相比于远点，近点具有更加可靠的深度估计值。</strong></p>
+<p><img src="/images/5bc7df2cab64416802001413.png" alt></p>
+<p>大多数现代双目SLAM系统都基于关键帧(keyframe-based)，它们在局部区域执行BA(Bundle Adjustment)优化以提供可拓展性。为了消除建图中的累积误差以保证地图的全局一致性，系统需要能够识别闭环并正确进行地图配准。RSLAM<sup><a href="#fn_2" id="reffn_2">2</a></sup>也执行局部BA操作，并且能够闭合回环，但没有强制全局一致性。S-PTAM<sup><a href="#fn_3" id="reffn_3">3</a></sup>也具有局部BA操作，但缺乏大型闭环功能。</p>
+<p>与这些方法类似，ORB-SLAM2在关键帧的局部集合进行BA操作(Local BA)，这样该操作的复杂性就与地图的规模无关，因此能够在大规模环境中执行。为了构建全局一致性的地图，ORB-SLAM2在闭合回环时，先对地图进行配准，然后执行因子图优化以最小化回环处的累积漂移，最后进行全局BA(full BA)优化。</p>
+<p>视觉SLAM系统除了可以基于关键帧之外，也可以基于直接法(direct method)——LSD-SLAM<sup><a href="#fn_4" id="reffn_4">4</a></sup>便是基于视觉直接法的双目SLAM系统。直接法不依赖特征，因此在有遮挡和纹理较少的环境中也能稳定工作。<strong>然而，直接法的表现可能会因为卷帘快门或非朗伯体反射中尚未建模的影响而严重下降。</strong></p>
+<h3 id="RGB-D-SLAM"><a href="#RGB-D-SLAM" class="headerlink" title="RGB-D SLAM"></a>RGB-D SLAM</h3><p>RGB-D相机可以直接获取RGB图像的深度信息，许多使用RGB-D作为传感器的SLAM系统使用ICP(Iterative Closest Point, 迭代最近点)进行姿态求解。不同于这些方法，ORB-SLAM2基于BA进行求解。由于BA的计算量远远低于ICP，ORB-SLAM2可以在标准的CPU上运行。此外，虽然它构建的是稀疏的基于关键帧的地图，但是由于关键帧的姿态非常准确，用户可以将姿态与深度信息相融合，构建场景的三维模型。</p>
+<h2 id="Framework"><a href="#Framework" class="headerlink" title="Framework"></a>Framework</h2><p>ORB-SLAM2整体由三个线程组成：Tracking（追踪）、Local mapping（局部建图）和Loop closing（闭环）。在执行闭环后会新建一个线程执行全局BA。系统的框架如下所示：</p>
+<p><img src="/images/5bc6a126ab64410cd0001ddf.png" alt></p>
+<p>图片左侧展示了系统的组成与工作流程，右侧展示了预处理过程的细节。</p>
+<h2 id="Monocular-and-Stereo-Keypoints"><a href="#Monocular-and-Stereo-Keypoints" class="headerlink" title="Monocular and Stereo Keypoints"></a>Monocular and Stereo Keypoints</h2><p>ORB-SLAM2的预处理基于特征进行：输入的图片使用ORB特征进行特征提取，得到一组关键点(keypoints)的位置坐标。关键点被定义为三元组$(u_L, v_L, u_R)$。$(u_L, v_L)$是关键点在左目图像的横纵坐标，$u_R$是关键点在右目图像的横坐标。如果假设双目已经校准，那么关键点在左右目图像上的坐标在同一条水平线上。因此，只需要关键点在左目图像的坐标与在右目图像的横坐标即可定义它。这样定义的关键点被称为双目关键点(Stereo keypoints)。</p>
+<p>如果关键点没有配对（单目或者双目情况下没有特征匹配上的点）或者深度值非法（RGB-D的情况下），那么这样的点被称为单目关键点(Monocular keypoints)，它定义为二元组$(u_L, v_L)$。如果在多种视角下观测到同一个关键点，那么可以通过三角测量估计它的深度值。单目关键点可以用于优化姿态估计。</p>
+<h2 id="RGB-D-points-to-Stereo-points"><a href="#RGB-D-points-to-Stereo-points" class="headerlink" title="RGB-D points to Stereo points"></a>RGB-D points to Stereo points</h2><p>ORB-SLAM2将深度信息转换为虚拟的右目图像坐标信息，转换公式如下：</p>
+<script type="math/tex; mode=display">
+u_R = u_L - \frac{f_x b}{d} \tag{1}</script><p>其中，$f_x$为相机的焦距，$b$是结构光投影器和红外相机之间的基准线，$d$是特征点的深度信息，$u_L$是特征点在左目图像的横坐标，$u_R$是特征点在（虚拟的）右目图像的横坐标。特别的，对于Kinect和Asus Xtion设备，ORB-SLAM2使用8 cm作为$b$的近似值。</p>
+<p>经过这样的处理，一组携带深度信息的单目关键点可以转换为一组双目关键点。</p>
+<h2 id="Bundle-Adjustment"><a href="#Bundle-Adjustment" class="headerlink" title="Bundle Adjustment"></a>Bundle Adjustment</h2><p>ORB-SLAM2中有三个地方用到了BA操作。</p>
+<h3 id="Motion-only-BA"><a href="#Motion-only-BA" class="headerlink" title="Motion-only BA"></a>Motion-only BA</h3><p>ORB-SLAM2在Tracking线程中执行BA优化相机的姿态，此处的BA仅优化相机的姿态（即运动模型），因此被称为Motion-only BA。</p>
+<p>相机的姿态可用旋转$R \in SO(3)$和平移$t \in R^3$表示，Motion-only BA通过最小化所有匹配的世界坐标下的三维点$X^i \in R^3$和关键点${\bf x}_{(\cdot)}^i$的重投影误差求出最优的姿态估计（单目：$X_m^i \in R^2$，双目：$X_s^i \in R^3$，$i \in X$）：</p>
+<script type="math/tex; mode=display">
+\{R, t\} = \underset{R,t}{\operatorname{argmin}} \sum_{i \in X} \rho \left( \lVert {\bf x}_{(\cdot)}^i - \pi_{(\cdot)} (R X^i + t) \rVert_\Sigma^2 \right)    \tag{2}</script><p>从上式可知Motion-only BA利用两帧间的匹配点对帧间姿态进行估计。对单目点，求解的是3D-2D问题；对双目点，求解的是3D-3D问题。式中，$\rho$是鲁棒Huber代价函数，$\Sigma$是关键点的协方差矩阵。$\pi_{(\cdot)}$是投影函数，将三维点从世界坐标系变换到相机坐标系。根据传感器是单目或双目，$\pi_{(\cdot)}$有不同定义$\pi_m$和$\pi_s$：</p>
+<script type="math/tex; mode=display">
+\pi_m = \left( \begin{bmatrix} X \\ Y \\ Z \end{bmatrix} \right) = \begin{bmatrix} f_x \frac{X}{Z} + c_x \\ f_y \frac{Y}{Z} + c_y \end{bmatrix}, \pi_s = \left( \begin{bmatrix} X \\ Y \\ Z \end{bmatrix} \right) = \begin{bmatrix} f_x \frac{X}{Z} + c_x \\ f_y \frac{Y}{Z} + c_y \\ f_x \frac{X - b}{Z} + c_x  \end{bmatrix}    \tag{3}</script><p>单目情况下投影函数等价于关键点左乘相机内参矩阵K后提取前二维。上式中的$(f_x, f_y)$是焦距，$(c_x, c_y)$是主点，$b$是基线。</p>
+<h3 id="Local-BA"><a href="#Local-BA" class="headerlink" title="Local BA"></a>Local BA</h3><p>在Local mapping中也有BA操作，称为Local BA，它优化一组共视的关键帧$K_L$和其中的所有的关键点$P_L$。所谓关键帧共视指的是这些关键帧都观测到了相同的关键点，这代表进行特征匹配时我们几乎总是可以得到配对。集合$K_F$包含所有其他不在$K_L$中的关键帧，这些关键帧里面可能包含$P_L$中的关键点（即$K_L$中的帧没有包含$P_L$中所有的点），因此虽然这些关键帧本身不会被优化，但它们可以用来优化相机的姿态。若定义$X_k$为$P_L中的关键点$和关键帧$k$的匹配集合，则Local BA优化的问题可形式化为：</p>
+<script type="math/tex; mode=display">
+\{X^i, R_l, t_l | i \in P_L, l \in K_L \} = \underset{X^i, R_l, t_l}{\operatorname{argmin}} \sum_{k \in K_L \cup K_F} \sum_{j \in X_k} \rho (E(k, j)) \\
+E(k,j) = {\lVert X_{(\cdot)}^j - \pi_{(\cdot)} (R_k X^j + t_k) \rVert}_\Sigma^2    \tag{4}</script><h3 id="Full-BA"><a href="#Full-BA" class="headerlink" title="Full BA"></a>Full BA</h3><p>ORB-SLAM2在闭环修正后会新建线程执行Full BA对所有的关键帧和关键点进行优化。它在Local BA的基础上，对不共视的关键帧也进行了优化（为了消除规范自由度，初始关键帧是固定的，不进行优化）：</p>
+<script type="math/tex; mode=display">
+\{X^i, R_l, t_l | i \in P_L, l \in K_L \cup K_F - K_o \} = \underset{X^i, R_l, t_l}{\operatorname{argmin}} \sum_{k \in K_L \cup K_F} \sum_{j \in X_k} \rho (E(k, j)) \\
+E(k,j) = {\lVert X_{(\cdot)}^j - \pi_{(\cdot)} (R_k X^j + t_k) \rVert}_\Sigma^2    \tag{5}</script><p>式中的$K_o$是由初始关键帧构成的集合。</p>
+<h2 id="Loop-Closing"><a href="#Loop-Closing" class="headerlink" title="Loop Closing"></a>Loop Closing</h2><p><a href="http://blog.leanote.com/post/gaunthan/vSLAM%E4%B8%AD%E7%9A%84%E5%9B%9E%E7%8E%AF%E6%A3%80%E6%B5%8B%E6%96%B9%E6%B3%95%E7%A0%94%E7%A9%B6" target="_blank" rel="noopener">闭环(Loop Closing)</a>由两步骤组成：</p>
+<ol>
+<li>找到闭环：检测和验证闭环的有效性。</li>
+<li>使用闭环：利用闭环修正位姿图。</li>
+</ol>
+<p>在执行完第二步后，LoopClosing模块会新建线程，执行Full BA优化以求得最优的估计解。由于Full BA作用在所有的关键帧上，操作很费时，因此它将这一过程放到了一个独立的线程中，使操作在后台执行，不影响系统其他部分的工作。若在运行BA优化的过程中，系统又检测到了新的闭环，那么它会直接中断优化，使用这个新的闭环再一次运行BA。</p>
+<p>由于执行BA的过程中系统仍然会继续添加新的关键帧，将BA的优化结果和当前的地图的状态相合并是一项具备挑战性的任务。ORB-SLAM2通过生成树(Spanning tree)将修正值从已更新的关键帧传播到未更新的关键帧上，这样即便是运行BA后添加的关键帧，也能根据它与之前关键帧的关系得到恰当的修正。</p>
+<h2 id="Keyframe-Insertion"><a href="#Keyframe-Insertion" class="headerlink" title="Keyframe Insertion"></a>Keyframe Insertion</h2><p>ORB-SLAM2是基于关键帧的，关键帧的质量和数量与系统的表现具有重大的联系。ORB-SLAM2依循了第一代版本的策略：频繁地插入关键帧，后续再删除冗余帧。由于近点比远点对状态估计提供的帮助大得多，我们可以根据关键帧中近点的数量来决定该关键帧是否是好的关键帧。同样，我们也可以根据近点的数量决定是否需要插入关键帧。</p>
+<p>如果追踪中的近点的数量低于$\tau_t$，而当前的关键帧至少能够提供$\tau_c$个新的近点，那么就插入这个关键帧。ORB-SLAM2依据经验将这两个超参数设为$\tau_t = 100, \tau_c = 70$。</p>
+<h2 id="Localization-Mode"><a href="#Localization-Mode" class="headerlink" title="Localization Mode"></a>Localization Mode</h2><p>除了SLAM模式，ORB-SLAM2还提供了定位模式。SLAM模式会同时建立地图和定位，而定位模式则是利用已有的地图进行定位。如果我们的环境是静态的，而且我们已经获得了环境的高精度地图，那么切换到轻量级的定位模式则是明智的决定。</p>
+<p>在定位模式下，Local mapping和Loop closing线程都不会运行，Tracking线程的工作表现就像一个视觉里程计，它利用相邻帧的匹配点进行位姿估计。当然，地图匹配信息也是必须的，因为视觉里程计只进行单纯的帧间估计，而这个操作会带来累积误差。利用地图点可以确保定位没有漂移，因此定位模式下会使用帧间匹配点和地图匹配点求解姿态。</p>
+<p>定位模式可以用在虚拟现实应用中，这类应用中地图通常是已经构建好的，最重要的任务是快速、准确地估计虚拟显示设备的姿态。</p>
+<h2 id="Conclusion"><a href="#Conclusion" class="headerlink" title="Conclusion"></a>Conclusion</h2><p>ORB-SLAM2的一个宗旨是让其他领域的研究者可以快速地构建他们的目标应用，不用受制于逐个实现SLAM中的模块。这一宗旨已经得到了很好地践行——许多流行的机器人、虚拟现实应用都使用ORB-SLAM2作为它们的基础框架。</p>
+<p>ORB-SLAM2还有许多的扩展工作可以进行，如使用其他的相机配置（无遮挡的多相机组、鱼眼相机、全向相机等）、大规模稠密融合、协作建图、增加运动模糊鲁棒性等。</p>
+<blockquote id="fn_1">
+<sup>1</sup>. L. M. Paz, P. Pinies, J. D. Tard ´ os, and J. Neira, “Large-scale 6-DOF SLAM ´ with stereo-in-hand,” IEEE Trans. Robot., vol. 24, no. 5, pp. 946–957, Oct. 2008.<a href="#reffn_1" title="Jump back to footnote [1] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_2">
+<sup>2</sup>. C. Mei, G. Sibley, M. Cummins, P. Newman, and I. Reid, “RSLAM: A system for large-scale mapping in constant-time using stereo,” Int. J. Comput. Vision, vol. 94, no. 2, pp. 198–214, 2011.<a href="#reffn_2" title="Jump back to footnote [2] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_3">
+<sup>3</sup>. T. Pire, T. Fischer, J. Civera, P. De Cristoforis, and J. J. Berlles, “Stereo ´ parallel tracking and mapping for robot localization,” in Proc. IEEE/RSJ Int. Conf. Intell. Robots Syst., 2015, pp. 1373–1378.<a href="#reffn_3" title="Jump back to footnote [3] in the text."> &#8617;</a>
+</blockquote>
+<blockquote id="fn_4">
+<sup>4</sup>. J. Engel, J. Stueckler, and D. Cremers, “Large-scale direct SLAM with stereo cameras,” in Proc. IEEE/RSJ Int. Conf. Intell. Robots Syst., 2015, pp. 1935–1942<a href="#reffn_4" title="Jump back to footnote [4] in the text."> &#8617;</a>
+</blockquote>
+
+    </article>
+    <!-- license  -->
+    
+        <div class="license-wrapper">
+            <p>原文作者：<a href="http://gaunthan.leanote.com">Gaunthan Huang</a>
+            </p><p>原文链接：<a href="http://gaunthan.leanote.com/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">http://gaunthan.leanote.com/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/</a>
+            </p><p>发表日期：<a href="http://gaunthan.leanote.com/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">October 16th 2018, 2:05:05 pm</a>
+            </p><p>更新日期：<a href="http://gaunthan.leanote.com/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">March 11th 2019, 2:46:20 pm</a>
+            </p><p>版权声明：本文采用<a rel="license" href="http://creativecommons.org/licenses/by-nc/4.0/">知识共享署名-非商业性使用 4.0 国际许可协议</a>进行许可</p>
+        </div>
+    
+    <!-- paginator  -->
+    <ul class="post-paginator">
+        <li class="next">
+            
+                <div class="nextSlogan">Next Post</div>
+                <a href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/" title="ORB-SLAM2 源码阅读笔记.md">
+                    <div class="nextTitle">ORB-SLAM2 源码阅读笔记.md</div>
+                </a>
+            
+        </li>
+        <li class="previous">
+            
+                <div class="prevSlogan">Previous Post</div>
+                <a href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/" title="ORB-SLAM2 Compiling Problems.md">
+                    <div class="prevTitle">ORB-SLAM2 Compiling Problems.md</div>
+                </a>
+            
+        </li>
+    </ul>
+    <!-- 评论插件 -->
+    <!-- 来必力City版安装代码 -->
+
+<!-- City版安装代码已完成 -->
+    
+    
+    <!-- partial('_partial/comment/changyan') -->
+    <!--PC版-->
+
+
+    
+    
+
+    <!-- 评论 -->
+</main>
+            <!-- profile -->
+            
+        </div>
+        <footer class="footer footer-unloaded">
+    <!-- social  -->
+    
+    <div class="social">
+        
+    
+        
+            
+                <a href="mailto:gaunthanhuang at foxmail dot com" class="iconfont-archer email" title="email"></a>
+            
+        
+    
+        
+            
+                <a href="//github.com/gaunthan" class="iconfont-archer github" target="_blank" title="github"></a>
+            
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+        
+    
+
+    </div>
+    
+    <!-- powered by Hexo  -->
+    <div class="copyright">
+        <span id="hexo-power">Powered by <a href="https://hexo.io/" target="_blank">Hexo</a></span><span class="iconfont-archer power">&#xe635;</span><span id="theme-info">theme <a href="https://github.com/fi3ework/hexo-theme-archer" target="_blank">Archer</a></span>
+    </div>
+    <!-- 不蒜子  -->
+    
+    <div class="busuanzi-container">
+    
+     
+    <span id="busuanzi_container_site_pv">PV: <span id="busuanzi_value_site_pv"></span> :)</span>
+    
+    </div>
+    
+</footer>
+    </div>
+    <!-- toc -->
+    
+    <div class="toc-wrapper" style=
+    
+
+
+
+
+
+
+
+top:50vh;
+
+    >
+        <div class="toc-catalog">
+            <span class="iconfont-archer catalog-icon">&#xe613;</span><span>CATALOG</span>
+        </div>
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Related-work"><span class="toc-number">2.</span> <span class="toc-text">Related work</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Stereo-SLAM"><span class="toc-number">2.1.</span> <span class="toc-text">Stereo SLAM</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RGB-D-SLAM"><span class="toc-number">2.2.</span> <span class="toc-text">RGB-D SLAM</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Framework"><span class="toc-number">3.</span> <span class="toc-text">Framework</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Monocular-and-Stereo-Keypoints"><span class="toc-number">4.</span> <span class="toc-text">Monocular and Stereo Keypoints</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#RGB-D-points-to-Stereo-points"><span class="toc-number">5.</span> <span class="toc-text">RGB-D points to Stereo points</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Bundle-Adjustment"><span class="toc-number">6.</span> <span class="toc-text">Bundle Adjustment</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Motion-only-BA"><span class="toc-number">6.1.</span> <span class="toc-text">Motion-only BA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Local-BA"><span class="toc-number">6.2.</span> <span class="toc-text">Local BA</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Full-BA"><span class="toc-number">6.3.</span> <span class="toc-text">Full BA</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Loop-Closing"><span class="toc-number">7.</span> <span class="toc-text">Loop Closing</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Keyframe-Insertion"><span class="toc-number">8.</span> <span class="toc-text">Keyframe Insertion</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Localization-Mode"><span class="toc-number">9.</span> <span class="toc-text">Localization Mode</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Conclusion"><span class="toc-number">10.</span> <span class="toc-text">Conclusion</span></a></li></ol>
+    </div>
+    
+    <div class="back-top iconfont-archer">&#xe639;</div>
+    <div class="sidebar sidebar-hide">
+    <ul class="sidebar-tabs sidebar-tabs-active-0">
+        <li class="sidebar-tab-archives"><span class="iconfont-archer">&#xe67d;</span><span class="tab-name">Archive</span></li>
+        <li class="sidebar-tab-tags"><span class="iconfont-archer">&#xe61b;</span><span class="tab-name">Tag</span></li>
+        <li class="sidebar-tab-categories"><span class="iconfont-archer">&#xe666;</span><span class="tab-name">Cate</span></li>
+    </ul>
+    <div class="sidebar-content sidebar-content-show-archive">
+          <div class="sidebar-panel-archives">
+    <!-- 在ejs中将archive按照时间排序 -->
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    <div class="total-and-search">
+        <div class="total-archive">
+        Total : 7
+        </div>
+        <!-- search  -->
+        
+    </div>
+    
+    <div class="post-archive">
+    
+    
+    
+    
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href="/2019/03/07/Computer Science/Robotics/SLAM/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM.md</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
+    <div class="archive-year"> 2018 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/21</span><a class="archive-post-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">ORB-SLAM2 源码阅读笔记.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/14</span><a class="archive-post-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">ORB-SLAM2 Compiling Problems.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/27</span><a class="archive-post-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/30</span><a class="archive-post-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">vSLAM中的闭环检测方法研究.md</a>
+        </li>
+    
+    </ul></div>
+  </div>
+        <div class="sidebar-panel-tags">
+    <div class="sidebar-tags-name">
+    
+        <span class="sidebar-tag-name" data-tags="SLAM"><span class="iconfont-archer">&#xe606;</span>SLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
+    
+        <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+        <span class="sidebar-tag-name" data-tags="vSLAM"><span class="iconfont-archer">&#xe606;</span>vSLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Paper Review"><span class="iconfont-archer">&#xe606;</span>Paper Review</span>
+    
+    </div>
+    <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
+    <div class="tag-load-fail" style="display: none; color: #ccc; font-size: 0.6rem;">
+    缺失模块。<br>
+    1、请确保node版本大于6.2<br>
+    2、在博客根目录（注意不是archer根目录）执行以下命令：<br>
+    <span style="color: #f75357; font-size: 1rem; line-height: 2rem;">npm i hexo-generator-json-content --save</span><br>
+    3、在根目录_config.yml里添加配置：
+    <pre style="color: #787878; font-size: 0.6rem;">
+jsonContent:
+  meta: false
+  pages: false
+  posts:
+    title: true
+    date: true
+    path: true
+    text: false
+    raw: false
+    content: false
+    slug: false
+    updated: false
+    comments: false
+    link: false
+    permalink: false
+    excerpt: false
+    categories: true
+    tags: true</pre>
+    </div> 
+    <div class="sidebar-tags-list"></div>
+</div>
+        <div class="sidebar-panel-categories">
+    <div class="sidebar-categories-name">
+    
+    </div>
+    <div class="iconfont-archer sidebar-categories-empty">&#xe678;</div>
+    <div class="sidebar-categories-list"></div>
+</div>
+    </div>
+</div> 
+    <script>
+    var siteMeta = {
+        root: "/",
+        author: "Gaunthan Huang"
+    }
+</script>
+    <!-- CDN failover -->
+    <script src="https://cdn.jsdelivr.net/npm/jquery@3.3.1/dist/jquery.min.js"></script>
+    <script type="text/javascript">
+        if (typeof window.$ === 'undefined')
+        {
+            console.warn('jquery load from jsdelivr failed, will load local script')
+            document.write('<script src="/lib/jquery.min.js">\x3C/script>')
+        }
+    </script>
+    <script src="/scripts/main.js"></script>
+    <!-- algolia -->
+    
+    <!-- busuanzi  -->
+    
+    <script async src="//busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+    
+    <!-- CNZZ  -->
+    
+    </div>
+    <!-- async load share.js -->
+    
+        <script src="/scripts/share.js" async></script>    
+     
+    <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+        tex2jax: {
+            inlineMath: [ ["$","$"], ["\\(","\\)"] ],
+            skipTags: ['script', 'noscript', 'style', 'textarea', 'pre', 'code'],
+            processEscapes: true
+        }
+    });
+    MathJax.Hub.Queue(function() {
+        var all = MathJax.Hub.getAllJax();
+        for (var i = 0; i < all.length; ++i)
+            all[i].SourceElement().parentNode.className += ' has-jax';
+    });
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+
+</body>
+</html>
+
+

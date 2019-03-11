@@ -348,7 +348,7 @@
     <article class="index-post">
         <a class="abstract-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">
             
-                <span>ORB-SLAM： A Versatile and Accurate Monocular SLAM System</span>
+                <span>ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</span>
         </a>
         <div class="abstract-content">
             
@@ -362,6 +362,186 @@ Introduction曾经有很长一段时间，BA(Bundle Adjustment)由于计算量�
             <!-- date  -->
             <div class="abstract-date">
                 <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/11/19</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">
+            
+                <span>ORB-SLAM2 源码阅读笔记.md</span>
+        </a>
+        <div class="abstract-content">
+            
+Source code: ORB_SLAM2.
+
+Data StructuresFrame帧区别于单张图像，它结合了相机、特征相关的内容，因此具有内参、特征关键点、特征描述符、视觉词袋向量、地图点以及姿态等数据成员，具备词袋计算、特征提取、姿态换算、投影相关的调用接口。
+对相机返回的图像进行处理后，就可以为其生成对应的帧。
+KeyFrame添加到地图中的帧称为关键帧(KeyFrame)，它构建在帧(Frame)的基础上，与地图(Map)关联。关键帧是对建图和定位比较重要的那些帧。
+Map地图(Map)表征了机器人感知到的环境，在基于关键帧的SLAM系统中，地图由许多共视的关键帧以及关键...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/10/21</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">
+            
+                <span>ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</span>
+        </a>
+        <div class="abstract-content">
+            
+Mur-Artal, Raul, and Juan D. Tardós. “Orb-slam2: An open-source slam system for monocular, stereo, and rgb-d cameras.” IEEE Transactions on Robotics 33.5 (2017): 1255-1262.
+
+IntroductionORB-SLAM2是ORB-SLAM的第二代版本，在一代的基础上，添加了对双目相机、RGB-D相机的支持。第一代的ORB-SLAM基于单目相机。
+视觉SLAM可使用的传感器有许多种：单目相机、双目相机、RGB-D相机等。...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/10/16</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Computer Vision">Computer Vision</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="vSLAM">vSLAM</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">
+            
+                <span>ORB-SLAM2 Compiling Problems.md</span>
+        </a>
+        <div class="abstract-content">
+            std::map must have the same value_type as its allocator1234567891011121314151617In file included from /usr/include/c++/8/map:61,                 from /home/gaunthan/workspace/ORB_SLAM2/Thirdparty/DBoW2/DBoW2/BowVector.h:14,                 from /home/gaunthan/workspace/ORB_SLAM2/include/KeyFrame....
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/10/14</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="vSLAM">vSLAM</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">
+            
+                <span>Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</span>
+        </a>
+        <div class="abstract-content">
+            
+Cadena, C., Carlone, L., Carrillo, H., Latif, Y., Scaramuzza, D., Neira, J., … &amp; Leonard, J. J. (2016). Past, present, and future of simultaneous localization and mapping: Toward the robust-perception age. IEEE Transactions on Robotics, 32(6), 1309-1332.
+
+评述这是一篇综述论文，阐述了SLAM研究过程中涌现的主要方法和技术，详细...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/09/27</span>
+            </div>
+            <!-- tags  -->
+            
+            <div class="abstract-tags">
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="SLAM">SLAM</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Robotics">Robotics</a>
+    
+        <a class="post-tag" href="javascript:void(0);" data-tags="Paper Review">Paper Review</a>
+    
+</div>
+            
+        </div>
+    </article>
+    
+    
+    
+    
+    
+    
+    <article class="index-post">
+        <a class="abstract-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">
+            
+                <span>vSLAM中的闭环检测方法研究.md</span>
+        </a>
+        <div class="abstract-content">
+            概述闭环检测(Loop Closure Detection)，主要解决位姿估计随时间漂移的问题。闭环检测是大尺度环境中SLAM应用的关键环节，是消除SLAM定位和构图中累积误差的重要手段。
+为了实现闭环检测，机器人需要能够识别出曾经到达过的场景。可以在场景中布置标识物（如二维码），机器人只要看到/扫描到相应的标识，就知道自己当前的位置。但是这种方法限制了应用环境，同时部署这类器件会带来额外的工程成本。实际上，让机器人使用自身携带的传感器——摄像头，来完成这一任务更加符合现实需求。由此，闭环检测就转化成了判断场景相似性的问题。
+基于视觉的闭环检测可以分为三类：
+
+Map-to-map。比对...
+        </div>
+        <div class="abstract-post-meta">
+            <!-- date  -->
+            <div class="abstract-date">
+                <span class="abstract-calander iconfont-archer">&#xe676;</span><span class="abstract-time">2018/06/30</span>
             </div>
             <!-- tags  -->
             
@@ -479,9 +659,67 @@ Introduction曾经有很长一段时间，BA(Bundle Adjustment)由于计算量�
     
     
     
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
     <div class="total-and-search">
         <div class="total-archive">
-        Total : 1
+        Total : 7
         </div>
         <!-- search  -->
         
@@ -492,12 +730,51 @@ Introduction曾经有很长一段时间，BA(Bundle Adjustment)由于计算量�
     
     
     
+    <div class="archive-year"> 2019 </div>
+    <ul class="year-list">
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">03/07</span><a class="archive-post-title" href="/2019/03/07/Computer Science/Robotics/SLAM/Building Dense Map for visual SLAM/">Building Dense Map for visual SLAM.md</a>
+        </li>
+    
+    
+    
+    
+    
+        </ul>
+    
     <div class="archive-year"> 2018 </div>
     <ul class="year-list">
     
     
         <li class="archive-post-item">
-            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System</a>
+            <span class="archive-post-date">11/19</span><a class="archive-post-title" href="/2018/11/19/Computer Science/Robotics/SLAM/ORB-SLAM： A Versatile and Accurate Monocular SLAM System/">ORB-SLAM： A Versatile and Accurate Monocular SLAM System.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/21</span><a class="archive-post-title" href="/2018/10/21/Computer Science/Robotics/SLAM/ORB-SLAM2 源码阅读笔记/">ORB-SLAM2 源码阅读笔记.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/16</span><a class="archive-post-title" href="/2018/10/16/Computer Science/Robotics/SLAM/ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras/">ORB-SLAM2： an Open-Source SLAM System for Monocular, Stereo and RGB-D Cameras.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">10/14</span><a class="archive-post-title" href="/2018/10/14/Computer Science/Robotics/SLAM/ORB-SLAM2 Compiling Problems/">ORB-SLAM2 Compiling Problems.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">09/27</span><a class="archive-post-title" href="/2018/09/27/Computer Science/Robotics/SLAM/Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age/">Past, Present, and Future of Simultaneous Localization and Mapping： Toward the Robust-Perception Age.md</a>
+        </li>
+    
+    
+        <li class="archive-post-item">
+            <span class="archive-post-date">06/30</span><a class="archive-post-title" href="/2018/06/30/Computer Science/Robotics/SLAM/vSLAM中的闭环检测方法研究/">vSLAM中的闭环检测方法研究.md</a>
         </li>
     
     </ul></div>
@@ -510,6 +787,10 @@ Introduction曾经有很长一段时间，BA(Bundle Adjustment)由于计算量�
         <span class="sidebar-tag-name" data-tags="Robotics"><span class="iconfont-archer">&#xe606;</span>Robotics</span>
     
         <span class="sidebar-tag-name" data-tags="Computer Vision"><span class="iconfont-archer">&#xe606;</span>Computer Vision</span>
+    
+        <span class="sidebar-tag-name" data-tags="vSLAM"><span class="iconfont-archer">&#xe606;</span>vSLAM</span>
+    
+        <span class="sidebar-tag-name" data-tags="Paper Review"><span class="iconfont-archer">&#xe606;</span>Paper Review</span>
     
     </div>
     <div class="iconfont-archer sidebar-tags-empty">&#xe678;</div>
